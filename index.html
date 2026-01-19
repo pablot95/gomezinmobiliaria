@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GOMEZ & ASOCIADOS | Inmobiliaria & Agrimensura</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="main-header">
+        <div class="container">
+            <a href="#" class="logo-link">
+                <!-- Se asume que logo.jpeg existe en la carpeta images -->
+                <img src="images/logo.jpeg" alt="Gomez & Asociados" class="logo">
+            </a>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="#inicio">Inicio</a></li>
+                    <li><a href="#propiedades">Propiedades</a></li>
+                    <li><a href="#experiencia">Experiencia</a></li>
+                    <li><a href="#contacto">Contacto</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="inicio" class="hero-section">
+        <div class="carousel">
+            <!-- Nuevas imágenes genéricas para el ejemplo -->
+            <div class="carousel-track">
+                <div class="slide active" style="background-image: url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');"></div>
+                <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');"></div> <!-- Repetida pero efectiva -->
+                <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');"></div>
+            </div>
+        </div>
+
+        <div class="hero-overlay">
+            <div class="search-container">
+                <h2>Excelencia en Servicios Inmobiliarios</h2>
+                <p style="color: white; margin-bottom: 20px;">COMPRA – VENTA – TASACIONES – ADMINISTRACIÓN <br> PLANOS DE MENSURA – FRACCIONAMIENTOS</p>
+                <form class="search-form">
+                    <div class="form-group">
+                        <select name="operacion" id="operacion">
+                            <option value="" disabled selected>Operación</option>
+                            <option value="venta">Venta</option>
+                            <option value="alquiler">Alquiler</option>
+                            <option value="tasacion">Solicitar Tasación</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <select name="tipo" id="tipo">
+                            <option value="" disabled selected>Tipo de Propiedad</option>
+                            <option value="casa">Casa</option>
+                            <option value="lote">Lote / Terreno</option>
+                            <option value="finca">Finca</option>
+                            <option value="departamento">Departamento</option>
+                            <option value="ph">Propiedad Horizontal</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" placeholder="Ubicación o Código" name="zona">
+                    </div>
+                    <button type="button" class="btn-search">CONSULTAR</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Recent Properties -->
+    <section id="propiedades" class="recent-properties section-padding">
+        <div class="container">
+            <h2 class="section-title">Oportunidades Destacadas</h2>
+            <div class="properties-grid">
+                
+                <!-- Card 1 -->
+                <article class="property-card">
+                    <div class="card-image">
+                        <!-- Imágenes placeholder distintas a Forte -->
+                        <img src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Residencia Exclusiva">
+                        <span class="tag sale">Casa en Venta</span>
+                    </div>
+                    <div class="card-content">
+                        <h3>Residencia Señorial en Guaymallén</h3>
+                        <p class="location"><i class="fas fa-map-marker-alt"></i> Las Cañas, Mendoza</p>
+                        <p class="price">USD 280.000</p>
+                        <div class="features">
+                            <span><i class="fas fa-bed"></i> 4</span>
+                            <span><i class="fas fa-bath"></i> 3</span>
+                            <span><i class="fas fa-ruler-combined"></i> 320m²</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Card 2 -->
+                <article class="property-card">
+                    <div class="card-image">
+                        <img src="https://images.unsplash.com/photo-1568605114967-8130f3a36994?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60" alt="Lote en Barrio Privado">
+                        <span class="tag sale">Lote en Venta</span>
+                    </div>
+                    <div class="card-content">
+                        <h3>Lote Central Barrio Privado</h3>
+                        <p class="location"><i class="fas fa-map-marker-alt"></i> Luján de Cuyo, Mendoza</p>
+                        <p class="price">USD 45.000</p>
+                        <div class="features">
+                            <span><i class="fas fa-tree"></i> Lote</span>
+                            <span><i class="fas fa-compass"></i> Norte</span>
+                            <span><i class="fas fa-ruler-combined"></i> 500m²</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Card 3 -->
+                <article class="property-card">
+                    <div class="card-image">
+                        <img src="https://images.unsplash.com/photo-1570129477492-45c003edd2be?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60" alt="Finca Productiva">
+                        <span class="tag sale">Finca en Venta</span>
+                    </div>
+                    <div class="card-content">
+                        <h3>Finca con Viñedos y Casa</h3>
+                        <p class="location"><i class="fas fa-map-marker-alt"></i> Maipú, Mendoza</p>
+                        <p class="price">Consultar</p>
+                        <div class="features">
+                            <span><i class="fas fa-tractor"></i> 5 Has</span>
+                            <span><i class="fas fa-warehouse"></i> Galpón</span>
+                            <span><i class="fas fa-wine-glass-alt"></i> Malbec</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Card 4 -->
+                <article class="property-card">
+                    <div class="card-image">
+                        <img src="https://images.unsplash.com/photo-1494526585095-c41746248156?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60" alt="Casa minimalista">
+                        <span class="tag rent">Casa en Alquiler</span>
+                    </div>
+                    <div class="card-content">
+                        <h3>Casa Minimalista</h3>
+                        <p class="location"><i class="fas fa-map-marker-alt"></i> Mendoza Capital</p>
+                        <p class="price">$ 600.000 / mes</p>
+                        <div class="features">
+                            <span><i class="fas fa-bed"></i> 3</span>
+                            <span><i class="fas fa-bath"></i> 2</span>
+                            <span><i class="fas fa-car"></i> Doble</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Card 5 -->
+                <article class="property-card">
+                    <div class="card-image">
+                        <img src="https://images.unsplash.com/photo-1515263487990-61b07816b324?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60" alt="Departamento">
+                        <span class="tag sale">Departamento en Venta</span>
+                    </div>
+                    <div class="card-content">
+                        <h3>Departamento de Categoría</h3>
+                        <p class="location"><i class="fas fa-map-marker-alt"></i> Godoy Cruz, Mendoza</p>
+                        <p class="price">USD 110.000</p>
+                        <div class="features">
+                            <span><i class="fas fa-building"></i> Piso 5</span>
+                            <span><i class="fas fa-bath"></i> 2</span>
+                            <span><i class="fas fa-swimming-pool"></i> Amenities</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Card 6 -->
+                <article class="property-card">
+                    <div class="card-image">
+                        <img src="https://images.unsplash.com/photo-1560185007-cde436f6a4d0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60" alt="Comercial">
+                        <span class="tag sale">Local en Venta</span>
+                    </div>
+                    <div class="card-content">
+                        <h3>Local Comercial + Oficinas</h3>
+                        <p class="location"><i class="fas fa-map-marker-alt"></i> Guaymallén Centro</p>
+                        <p class="price">USD 180.000</p>
+                        <div class="features">
+                            <span><i class="fas fa-store"></i> 150m²</span>
+                            <span><i class="fas fa-arrows-alt"></i> Frente</span>
+                            <span><i class="fas fa-percentage"></i> Rentabilidad</span>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- Info Sections Wrapper -->
+    <div class="info-sections-wrapper">
+        
+        <!-- 1. Intro / Quiénes Somos (Modificado) -->
+        <section id="experiencia" class="info-section light-bg">
+            <div class="container">
+                <h2 class="section-title">Nuestra Filosofía</h2>
+                <div class="text-content" style="text-align: center; max-width: 900px; margin: 0 auto;">
+                    <p>En <strong>GOMEZ & ASOCIADOS</strong> fusionamos la visión técnica de la agrimensura con el dinamismo del mercado inmobiliario.</p>
+                    <p>Entendemos que cada metro cuadrado tiene un valor potencial que va más allá de lo visible. Nuestro enfoque integral nos permite asesorar no solo en la compraventa, sino en la viabilidad técnica, legal y urbanística de cada proyecto.</p>
+                    <br>
+                    <div style="display: flex; justify-content: center; gap: 40px; margin-top: 30px; flex-wrap: wrap;">
+                        <div style="text-align: center;">
+                            <i class="fas fa-file-signature" style="font-size: 3rem; color: var(--secondary-color); margin-bottom: 15px;"></i>
+                            <h4 style="color: var(--primary-color);">Garantía Legal</h4>
+                            <p style="font-size: 0.9rem;">Títulos Supletorios y Saneamiento</p>
+                        </div>
+                        <div style="text-align: center;">
+                            <i class="fas fa-drafting-compass" style="font-size: 3rem; color: var(--secondary-color); margin-bottom: 15px;"></i>
+                            <h4 style="color: var(--primary-color);">Precisión Técnica</h4>
+                            <p style="font-size: 0.9rem;">Mensuras y Fraccionamientos</p>
+                        </div>
+                        <div style="text-align: center;">
+                            <i class="fas fa-handshake" style="font-size: 3rem; color: var(--secondary-color); margin-bottom: 15px;"></i>
+                            <h4 style="color: var(--primary-color);">Gestión Comercial</h4>
+                            <p style="font-size: 0.9rem;">Ventas y Negociación Efectiva</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Análisis del valor -> Estrategia de Mercado (Nuevo formato y texto) -->
+        <section class="info-section">
+            <div class="container">
+                <h2 class="section-title">Evaluación & Estrategia</h2>
+                <div class="grid-cards">
+                    <article class="strategy-card">
+                        <i class="fas fa-search-dollar"></i>
+                        <h3>Tasación Realista</h3>
+                        <p>No generamos falsas expectativas. Analizamos el mercado actual, comparables zonales y potencial técnico del inmueble para definir un precio competitivo y realizable.</p>
+                    </article>
+                    <article class="strategy-card">
+                        <i class="fas fa-bullseye"></i>
+                        <h3>Posicionamiento Exacto</h3>
+                        <p>Identificamos el perfil exacto del comprador para su propiedad (inversor, familia, desarrollador) y dirigimos nuestros recursos publicitarios específicamente hacia ese segmento.</p>
+                    </article>
+                    <article class="strategy-card">
+                        <i class="fas fa-hard-hat"></i>
+                        <h3>Visión de Desarrollo</h3>
+                        <p>Al contar con área de agrimensura, podemos destacar potenciales de subdivisión o ampliación que otras inmobiliarias pasan por alto, aumentando el valor percibido.</p>
+                    </article>
+                    <article class="strategy-card">
+                        <i class="fas fa-hand-holding-usr"></i>
+                        <h3>Acompañamiento Total</h3>
+                        <p>Desde la primera visita hasta la firma de la escritura, gestionamos toda la documentación administrativa y técnica necesaria para una operación segura.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Qué hacemos -> Metodología de Trabajo (Nuevo formato lista vertical limpia) -->
+        <section class="info-section light-bg">
+            <div class="container">
+                <h2 class="section-title">Protocolo de Gestión</h2>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-number">01</div>
+                        <div class="timeline-content">
+                            <h3>Diagnóstico Inicial</h3>
+                            <p>Relevamiento fotográfico, verificación de documentación legal y técnica, y estudio de mercado comparativo.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-number">02</div>
+                        <div class="timeline-content">
+                            <h3>Estrategia de Difusión</h3>
+                            <p>Lanzamiento en portal propio, redes sociales corporativas (@inmobiliariagomezyasoc) y portales líderes con material audiovisual de calidad.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-number">03</div>
+                        <div class="timeline-content">
+                            <h3>Filtrado Profesional</h3>
+                            <p>Calificamos a los interesados antes de las visitas. Solicitamos garantías previas y perfil económico para optimizar su tiempo y seguridad.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-number">04</div>
+                        <div class="timeline-content">
+                            <h3>Cierre y Formalización</h3>
+                            <p>Redacción de boleto de compra-venta, coordinación con escribanías y seguimiento post-venta.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Contact Footer -->
+    <footer id="contacto" class="footer-contact">
+        <div class="container">
+            <h2 class="section-title" style="color: var(--secondary-color);">Contáctenos</h2>
+            <div class="contact-info">
+                <p><strong>GOMEZ & ASOCIADOS</strong></p>
+                <p>INMOBILIARIA & AGRIMENSURA</p>
+                <br>
+                <p><i class="fas fa-map-marker-alt"></i> Juan Díaz de Solíz N° 669, Las Cañas – Guaymallén</p>
+                <p><i class="fas fa-phone-alt"></i> 2614676359  |  <i class="fab fa-whatsapp"></i> 2615116458</p>
+                <p><i class="fas fa-envelope"></i> consultas@inmobiliariagomezyasoc.com</p>
+            </div>
+            <div class="social-links">
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+                <a href="#"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+            <p style="margin-top: 40px; font-size: 0.8rem; color: #555;">&copy; 2026 Gomez & Asociados. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
