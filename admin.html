@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Administrativo | GOMEZ & ASOCIADOS</title>
+    <link rel="icon" type="image/jpeg" href="images/logo.png">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background: #f0f2f5; padding-top: 50px; padding-bottom: 50px; }
+        .admin-container { max-width: 1000px; margin: 0 auto; background: white; padding: 40px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .form-section { margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 20px; }
+        .form-section h3 { margin-bottom: 20px; color: var(--secondary-color); text-transform: uppercase; font-size: 1rem; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9rem; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; }
+        .checkbox-group { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .checkbox-group label { font-weight: normal; display: flex; align-items: center; gap: 5px; cursor: pointer; }
+        .btn-submit { background: var(--secondary-color); color: white; border: none; padding: 15px 30px; font-size: 1.1rem; cursor: pointer; width: 100%; margin-top: 20px; }
+        .btn-submit:hover { opacity: 0.9; }
+        #message { margin-top: 20px; padding: 10px; display: none; text-align: center; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+
+        /* Properties List */
+        .properties-list-container { margin-top: 50px; border-top: 4px solid var(--secondary-color); padding-top: 30px; }
+        .property-item {
+            background: #fff; border: 1px solid #ddd; padding: 15px; margin-bottom: 10px; border-radius: 6px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .property-info strong { display: block; font-size: 1.1rem; margin-bottom: 5px; }
+        .btn-delete { background: #d9534f; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; }
+        .btn-delete:hover { background: #c9302c; }
+
+        /* LOGIN STYLES */
+        #login-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #222; z-index: 10000;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .login-box {
+            background: white; padding: 40px; border-radius: 8px; width: 90%; max-width: 400px;
+            text-align: center; border-top: 5px solid var(--secondary-color);
+        }
+        .login-box input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; }
+        .login-box button { width: 100%; padding: 12px; background: var(--secondary-color); color: white; border: none; font-weight: bold; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <!-- LOGIN SCREEN -->
+    <div id="login-overlay">
+        <div class="login-box">
+            <h2 style="margin-bottom: 20px; color: #333;">Acceso Administrativo</h2>
+            <input type="text" id="admin-user" placeholder="Usuario">
+            <input type="password" id="admin-pass" placeholder="Contraseña">
+            <button onclick="checkAdminLogin()">INGRESAR</button>
+            <p id="login-error" style="color: red; margin-top: 10px; display: none;">Credenciales incorrectas</p>
+        </div>
+    </div>
+
+    <div class="admin-container" id="admin-content" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+             <h1>Carga de Propiedades</h1>
+             <button onclick="logout()" style="background:none; border:none; color: #d9534f; cursor: pointer; font-weight: bold;">
+                <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+             </button>
+        </div>
+        
+        <form id="propertyForm">
+            
+            <div class="form-section">
+                <h3>Información Básica</h3>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Título de la Publicación</label>
+                        <input type="text" id="titulo" required placeholder="Ej: Casa en Barrio Privado">
+                    </div>
+                    <div class="form-group">
+                        <label>Operación</label>
+                        <select id="operacion" required>
+                            <option value="venta">Venta</option>
+                            <option value="alquiler">Alquiler</option>
+                            <option value="temporario">Temporario</option>
+                            <option value="permuta">Permuta</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo de Propiedad</label>
+                        <select id="tipo" required>
+                            <option value="casa">Casa</option>
+                            <option value="departamento">Departamento</option>
+                            <option value="lote">Lote / Terreno</option>
+                            <option value="local">Local Comercial</option>
+                            <option value="oficina">Oficina</option>
+                            <option value="galpon">Galpón</option>
+                            <option value="finca">Finca</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Moneda</label>
+                        <select id="moneda" required>
+                            <option value="USD" selected>USD (Dólares)</option>
+                            <option value="$">ARS (Pesos)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Precio (Solo números)</label>
+                        <input type="number" id="precio" required placeholder="Ej: 150000">
+                    </div>
+                    <div class="form-group">
+                        <label>Valor Expensas (Opcional)</label>
+                        <input type="text" id="expensas">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3>Ubicación y Mapa</h3>
+                <div class="form-group">
+                    <label>Zona / Ciudad</label>
+                    <select id="zona" required>
+                        <option value="">Seleccione una zona...</option>
+                        <option value="Ciudad de Mendoza">Ciudad de Mendoza</option>
+                        <option value="Godoy Cruz">Godoy Cruz</option>
+                        <option value="Guaymallén">Guaymallén</option>
+                        <option value="Luján de Cuyo">Luján de Cuyo</option>
+                        <option value="Maipú">Maipú</option>
+                        <option value="Tupungato">Tupungato</option>
+                        <option value="Tunuyán">Tunuyán</option>
+                        <option value="Gran Mendoza">Gran Mendoza</option>
+                        <option value="Las Heras">Las Heras</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Dirección exacta</label>
+                    <input type="text" id="ubicacion" required placeholder="Ej: Las Cañas 345">
+                </div>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Latitud (Ej: -32.890)</label>
+                        <input type="text" id="lat" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Longitud (Ej: -68.845)</label>
+                        <input type="text" id="lng" required>
+                    </div>
+                </div>
+                <small>Puedes usar Google Maps para obtener las coordenadas (marcando un punto en el mapa y haciendo click derecho).</small>
+            </div>
+
+            <div class="form-section">
+                <h3>Superficies y Distribución</h3>
+                <div class="grid-4">
+                    <div class="form-group">
+                        <label>Sup. Total (m2)</label>
+                        <input type="number" id="supTotal">
+                    </div>
+                    <div class="form-group">
+                        <label>Sup. Cubierta (m2)</label>
+                        <input type="number" id="supCubierta">
+                    </div>
+                    <div class="form-group">
+                        <label>Ambientes</label>
+                        <input type="number" id="ambientes">
+                    </div>
+                    <div class="form-group">
+                        <label>Dormitorios</label>
+                        <input type="number" id="dormitorios">
+                    </div>
+                    <div class="form-group">
+                        <label>Baños</label>
+                        <input type="number" id="banios">
+                    </div>
+                    <div class="form-group">
+                        <label>Cocheras</label>
+                        <input type="number" id="cocheras">
+                    </div>
+                    <div class="form-group">
+                        <label>Antigüedad (años)</label>
+                        <input type="number" id="antiguedad">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3>Características y Servicios</h3>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" id="agua"> Agua Corriente</label>
+                    <label><input type="checkbox" id="luz"> Luz Eléctrica</label>
+                    <label><input type="checkbox" id="gas"> Gas Natural</label>
+                    <label><input type="checkbox" id="cloacas"> Cloacas</label>
+                    <label><input type="checkbox" id="internet"> Internet / Wifi</label>
+                    <label><input type="checkbox" id="pavimento"> Pavimento</label>
+                    <label><input type="checkbox" id="pileta"> Pileta</label>
+                    <label><input type="checkbox" id="parrilla"> Parrilla / Quincho</label>
+                    <label><input type="checkbox" id="jardin"> Jardín</label>
+                    <label><input type="checkbox" id="seguridad"> Seguridad / Alarma</label>
+                    <label><input type="checkbox" id="mascotas"> Apto Mascotas</label>
+                    <label><input type="checkbox" id="profesional"> Apto Profesional</label>
+                    <label><input type="checkbox" id="escritura"> Escritura Inmediata</label>
+                    <label><input type="checkbox" id="planos"> Planos Aprobados</label>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3>Imágenes</h3>
+                <div class="form-group">
+                    <label>Imagen Principal (Portada)</label>
+                    <input type="file" id="imgPrincipal" accept="image/*" required>
+                </div>
+                <div class="form-group">
+                    <label>Imágenes Galería (Seleccionar múltiples)</label>
+                    <input type="file" id="imgGaleria" accept="image/*" multiple>
+                </div>
+                <div class="form-group">
+                    <label>Descripción Completa</label>
+                    <textarea id="descripcion" rows="5" required></textarea>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit">GUARDAR PROPIEDAD</button>
+            <div id="message"></div>
+        </form>
+
+        <div class="properties-list-container">
+            <h3>Propiedades Cargadas</h3>
+            <div id="propertiesList">Cargando...</div>
+        </div>
+
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script type="module" src="admin.js"></script>
+
+    <!-- AUTH SCRIPT -->
+    <script>
+        // Check Session on Load
+        document.addEventListener("DOMContentLoaded", () => {
+             const isAuth = sessionStorage.getItem('adminAuth');
+             if(isAuth === 'true') {
+                 showAdminContent();
+             }
+        });
+
+        function showAdminContent() {
+            document.getElementById('login-overlay').style.display = 'none';
+            document.getElementById('admin-content').style.display = 'block';
+        }
+
+        function checkAdminLogin() {
+            const u = document.getElementById('admin-user').value;
+            const p = document.getElementById('admin-pass').value;
+            const errorMsg = document.getElementById('login-error');
+
+            if(u === 'gomezasociados' && p === 'Gomezasociados2025!') {
+                sessionStorage.setItem('adminAuth', 'true');
+                showAdminContent();
+                errorMsg.style.display = 'none';
+            } else {
+                errorMsg.style.display = 'block';
+            }
+        }
+
+        function logout() {
+            sessionStorage.removeItem('adminAuth');
+            window.location.reload();
+        }
+    </script>
+</body>
+</html>

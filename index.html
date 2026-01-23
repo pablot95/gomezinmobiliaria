@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GOMEZ & ASOCIADOS | Inmobiliaria & Agrimensura</title>
+    <link rel="icon" type="image/jpeg" href="images/logo.png"   >
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
 </head>
 <body>
 
@@ -13,13 +15,14 @@
     <header class="main-header">
         <div class="container">
             <a href="#" class="logo-link">
-                <!-- Se asume que logo.jpeg existe en la carpeta images -->
-                <img src="images/logo.jpeg" alt="Gomez & Asociados" class="logo">
+                <!-- Solo Texto -->
+                <h1 style="font-size: 1.5rem; color: var(--secondary-color); font-weight: 300; letter-spacing: 1px;">INMOBILIARIA GOMEZ & ASOCIADOS</h1>
             </a>
             <nav class="main-nav">
                 <ul>
                     <li><a href="#inicio">Inicio</a></li>
                     <li><a href="#propiedades">Propiedades</a></li>
+                    <li><a href="#agrimensura">Agrimensura</a></li>
                     <li><a href="#experiencia">Experiencia</a></li>
                     <li><a href="#contacto">Contacto</a></li>
                 </ul>
@@ -40,31 +43,139 @@
 
         <div class="hero-overlay">
             <div class="search-container">
+                <!-- Logo Principal Grande -->
+                <img src="images/logo.png" alt="Gomez & Asociados" class="hero-logo">
+                
                 <h2>Excelencia en Servicios Inmobiliarios</h2>
                 <p style="color: white; margin-bottom: 20px;">COMPRA – VENTA – TASACIONES – ADMINISTRACIÓN - PLANOS DE MENSURA – FRACCIONAMIENTOS</p>
-                <form class="search-form">
-                    <div class="form-group">
-                        <select name="operacion" id="operacion">
-                            <option value="" disabled selected>Operación</option>
-                            <option value="venta">Venta</option>
-                            <option value="alquiler">Alquiler</option>
-                            <option value="tasacion">Solicitar Tasación</option>
-                        </select>
+                <form class="search-form" id="advanced-search-form">
+                    <!-- Fila Principal (Siempre visible) -->
+                    <div class="search-main-row">
+                        <div class="form-group">
+                            <select name="operacion" id="operacion">
+                                <option value="" disabled selected>Operación</option>
+                                <option value="venta">Venta</option>
+                                <option value="alquiler">Alquiler</option>
+                                <option value="temporario">Alquiler Temporario</option>
+                                <option value="emprendimiento">Emprendimiento</option>
+                                <option value="permuta">Permuta</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <select name="tipo" id="tipo">
+                                <option value="" disabled selected>Tipo de Propiedad</option>
+                                <option value="departamento">Departamento</option>
+                                <option value="casa">Casa</option>
+                                <option value="local">Local Comercial</option>
+                                <option value="quinta">Quinta Vacacional</option>
+                                <option value="consultorio">Consultorio</option>
+                                <option value="ph">PH</option>
+                                <option value="oficina">Oficina Comercial</option>
+                                <option value="deposito">Depósito</option>
+                                <option value="garage">Garage</option>
+                                <option value="bodega">Bodega</option>
+                                <option value="galpon">Galpón</option>
+                                <option value="edificio">Edificio</option>
+                                <option value="terreno">Terreno</option>
+                                <option value="hotel">Hotel</option>
+                                <option value="fondo">Fondo de Comercio</option>
+                                <option value="nautica">Cama Náutica</option>
+                                <option value="campo">Campo</option>
+                                <option value="quincho">Quincho</option>
+                                <option value="salon">Salón de Eventos</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <select name="zona" id="zona">
+                                <option value="" selected>Ubicación / Zona</option>
+                                <option value="Ciudad de Mendoza">Ciudad de Mendoza</option>
+                                <option value="Godoy Cruz">Godoy Cruz</option>
+                                <option value="Guaymallén">Guaymallén</option>
+                                <option value="Luján de Cuyo">Luján de Cuyo</option>
+                                <option value="Maipú">Maipú</option>
+                                <option value="Tupungato">Tupungato</option>
+                                <option value="Tunuyán">Tunuyán</option>
+                                <option value="Gran Mendoza">Gran Mendoza</option>
+                                <option value="Las Heras">Las Heras</option>
+                            </select>
+                        </div>
+                        <button type="button" class="btn-search" onclick="filterProperties()">BUSCAR</button>
                     </div>
-                    <div class="form-group">
-                        <select name="tipo" id="tipo">
-                            <option value="" disabled selected>Tipo de Propiedad</option>
-                            <option value="casa">Casa</option>
-                            <option value="lote">Lote / Terreno</option>
-                            <option value="finca">Finca</option>
-                            <option value="departamento">Departamento</option>
-                            <option value="ph">Propiedad Horizontal</option>
-                        </select>
+
+                    <!-- Toggle Avanzado -->
+                    <div class="advanced-toggle" onclick="toggleAdvancedSearch()">
+                        <span>Búsqueda Avanzada / Más Filtros <i class="fas fa-chevron-down"></i></span>
                     </div>
-                    <div class="form-group">
-                        <input type="text" placeholder="Ubicación o Código" name="zona">
+
+                    <!-- Panel Avanzado (Oculto por defecto) -->
+                    <div class="advanced-filters" id="advanced-filters" style="display: none;">
+                        
+                        <!-- Precios y Expensas -->
+                        <div class="filter-group-row">
+                            <h4>Precio y Costos</h4>
+                            <div class="fg-inputs">
+                                <select name="moneda" class="tiny-select">
+                                    <option value="USD">USD</option>
+                                    <option value="ARS">ARS</option>
+                                </select>
+                                <input type="number" placeholder="Desde" name="precio_desde">
+                                <input type="number" placeholder="Hasta" name="precio_hasta">
+                                <label class="check-label"><input type="checkbox" name="incluye_expensas"> Incluye Expensas</label>
+                                <input type="number" placeholder="Valor Expensas" name="valor_expensas">
+                                <label class="check-label hl-check"><input type="checkbox" name="solicitar_agrimensura"> Solicitar Plano Agrimensura</label>
+                            </div>
+                        </div>
+
+                        <!-- Ambientes y Superficies -->
+                        <div class="filter-group-row">
+                            <h4>Distribución y Superficie</h4>
+                            <div class="fg-inputs grid-4">
+                                <input type="number" placeholder="Ambientes" name="ambientes">
+                                <input type="number" placeholder="Dormitorios" name="dormitorios">
+                                <input type="number" placeholder="Baños" name="banios">
+                                <input type="number" placeholder="Cocheras" name="cocheras">
+                            </div>
+                            <div class="fg-inputs mt-2">
+                                <span>Sup. Cubierta (m²):</span>
+                                <input type="number" placeholder="Desde" name="sup_cub_desde">
+                                <input type="number" placeholder="Hasta" name="sup_cub_hasta">
+                            </div>
+                            <div class="fg-inputs mt-2">
+                                <span>Sup. Total (m²):</span>
+                                <input type="number" placeholder="Desde" name="sup_tot_desde">
+                                <input type="number" placeholder="Hasta" name="sup_tot_hasta">
+                            </div>
+                        </div>
+
+                        <!-- Servicios y Características -->
+                        <div class="filter-group-cols">
+                            <div class="col-checks">
+                                <h4>Generales</h4>
+                                <label><input type="checkbox" name="mascota"> Apto Mascota</label>
+                                <label><input type="checkbox" name="profesional"> Apto Profesional</label>
+                                <label><input type="checkbox" name="comercial"> Uso Comercial</label>
+                                <label><input type="checkbox" name="credito"> Apto Crédito</label>
+                            </div>
+                            <div class="col-checks">
+                                <h4>Servicios</h4>
+                                <label><input type="checkbox"> Agua Corriente</label>
+                                <label><input type="checkbox"> Luz</label>
+                                <label><input type="checkbox"> Gas Natural</label>
+                                <label><input type="checkbox"> Cloacas</label>
+                                <label><input type="checkbox"> Internet/Wifi</label>
+                                <label><input type="checkbox"> Pavimento</label>
+                            </div>
+                            <div class="col-checks">
+                                <h4>Comodidades</h4>
+                                <label><input type="checkbox"> Pileta</label>
+                                <label><input type="checkbox"> Parrilla</label>
+                                <label><input type="checkbox"> Quincho</label>
+                                <label><input type="checkbox"> SUM</label>
+                                <label><input type="checkbox"> Seguridad</label>
+                                <label><input type="checkbox"> Cochera</label>
+                            </div>
+                        </div>
                     </div>
-                    <button type="button" class="btn-search">CONSULTAR</button>
                 </form>
             </div>
         </div>
@@ -74,116 +185,61 @@
     <section id="propiedades" class="recent-properties section-padding">
         <div class="container">
             <h2 class="section-title">Oportunidades Destacadas</h2>
-            <div class="properties-grid">
+            <div class="properties-grid" id="properties-container">
+                <p style="text-align: center; width: 100%; grid-column: 1 / -1; padding: 40px; font-size: 1.2rem; color: #666;">
+                    <i class="fas fa-circle-notch fa-spin"></i> Cargando propiedades...
+                </p>
+            </div>
+            
+            <!-- Map Section -->
+            <div id="main-map" style="width: 100%; height: 500px; margin-top: 40px; z-index: 1;"></div>
+        </div>
+    </section>
+
+    <!-- Agrimensura Section -->
+    <section id="agrimensura" class="info-section">
+        <div class="container">
+            <h2 class="section-title">Agrimensura & Legales</h2>
+            <div class="agrimensura-content" style="display: flex; flex-wrap: wrap; gap: 40px; justify-content: center;">
                 
-                <!-- Card 1 -->
-                <article class="property-card">
-                    <div class="card-image">
-                        <!-- Imágenes placeholder distintas a Forte -->
-                        <img src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Residencia Exclusiva">
-                        <span class="tag sale">Casa en Venta</span>
-                    </div>
-                    <div class="card-content">
-                        <h3>Residencia Señorial en Guaymallén</h3>
-                        <p class="location"><i class="fas fa-map-marker-alt"></i> Las Cañas, Mendoza</p>
-                        <p class="price">USD 280.000</p>
-                        <div class="features">
-                            <span><i class="fas fa-bed"></i> 4</span>
-                            <span><i class="fas fa-bath"></i> 3</span>
-                            <span><i class="fas fa-ruler-combined"></i> 320m²</span>
-                        </div>
-                    </div>
-                </article>
+                <div class="agrim-info" style="flex: 1; min-width: 300px; margin-top: 5%;">
+                    <h3>Servicios Profesionales</h3>
+                    <ul style="list-style: none; margin-top: 20px;">
+                        <li style="margin-bottom: 10px;"><i class="fas fa-check" style="color: var(--secondary-color); margin-right: 10px;"></i> Estados Parcelarios</li>
+                        <li style="margin-bottom: 10px;"><i class="fas fa-check" style="color: var(--secondary-color); margin-right: 10px;"></i> Mensuras y Fraccionamientos</li>
+                        <li style="margin-bottom: 10px;"><i class="fas fa-check" style="color: var(--secondary-color); margin-right: 10px;"></i> Amojonamientos</li>
+                        <li style="margin-bottom: 10px;"><i class="fas fa-check" style="color: var(--secondary-color); margin-right: 10px;"></i> Verificación de Títulos</li>
+                        <li style="margin-bottom: 10px;"><i class="fas fa-check" style="color: var(--secondary-color); margin-right: 10px;"></i> Topografía e Ingeniería</li>
+                    </ul>
+                    <p style="margin-top: 20px;">
+                        Nuestro equipo de agrimensores matriculados garantiza la seguridad jurídica de su inmueble. 
+                        Antes de realizar cualquier operación inmobiliaria, asegúrese de que los límites y la documentación estén en orden.
+                    </p>
+                </div>
 
-                <!-- Card 2 -->
-                <article class="property-card">
-                    <div class="card-image">
-                        <img src="https://images.unsplash.com/photo-1568605114967-8130f3a36994?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60" alt="Lote en Barrio Privado">
-                        <span class="tag sale">Lote en Venta</span>
-                    </div>
-                    <div class="card-content">
-                        <h3>Lote Central Barrio Privado</h3>
-                        <p class="location"><i class="fas fa-map-marker-alt"></i> Luján de Cuyo, Mendoza</p>
-                        <p class="price">USD 45.000</p>
-                        <div class="features">
-                            <span><i class="fas fa-tree"></i> Lote</span>
-                            <span><i class="fas fa-compass"></i> Norte</span>
-                            <span><i class="fas fa-ruler-combined"></i> 500m²</span>
+                <div class="agrim-form-box" style="flex: 1; min-width: 300px; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-top: 5px solid var(--secondary-color);">
+                    <h3 style="margin-bottom: 20px; color: var(--primary-color);">Solicitar Informe de Padrón</h3>
+                    <p style="font-size: 0.9rem; margin-bottom: 20px;">Ingrese el número de padrón y sus datos. Recibirá la información vía WhatsApp.</p>
+                    
+                    <form id="padronForm" onsubmit="sendPadronToWhatsapp(event)">
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <label for="padron_numero" style="display: block; margin-bottom: 5px; font-weight: bold;">Número de Padrón</label>
+                            <input type="text" id="padron_numero" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;" placeholder="Ej: 12345/6">
                         </div>
-                    </div>
-                </article>
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <label for="padron_nombre" style="display: block; margin-bottom: 5px; font-weight: bold;">Nombre y Apellido</label>
+                            <input type="text" id="padron_nombre" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;" placeholder="Su nombre completo">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <label for="padron_telefono" style="display: block; margin-bottom: 5px; font-weight: bold;">Su Teléfono (opcional)</label>
+                            <input type="tel" id="padron_telefono" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;" placeholder="Para contacto">
+                        </div>
+                        <button type="submit" style="width: 100%; background-color: #25D366; color: white; padding: 12px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                            <i class="fab fa-whatsapp" style="font-size: 1.2rem;"></i> Solictar Info
+                        </button>
+                    </form>
+                </div>
 
-                <!-- Card 3 -->
-                <article class="property-card">
-                    <div class="card-image">
-                        <img src="https://images.unsplash.com/photo-1570129477492-45c003edd2be?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60" alt="Finca Productiva">
-                        <span class="tag sale">Finca en Venta</span>
-                    </div>
-                    <div class="card-content">
-                        <h3>Finca con Viñedos y Casa</h3>
-                        <p class="location"><i class="fas fa-map-marker-alt"></i> Maipú, Mendoza</p>
-                        <p class="price">Consultar</p>
-                        <div class="features">
-                            <span><i class="fas fa-tractor"></i> 5 Has</span>
-                            <span><i class="fas fa-warehouse"></i> Galpón</span>
-                            <span><i class="fas fa-wine-glass-alt"></i> Malbec</span>
-                        </div>
-                    </div>
-                </article>
-
-                <!-- Card 4 -->
-                <article class="property-card">
-                    <div class="card-image">
-                        <img src="https://images.unsplash.com/photo-1494526585095-c41746248156?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60" alt="Casa minimalista">
-                        <span class="tag rent">Casa en Alquiler</span>
-                    </div>
-                    <div class="card-content">
-                        <h3>Casa Minimalista</h3>
-                        <p class="location"><i class="fas fa-map-marker-alt"></i> Mendoza Capital</p>
-                        <p class="price">$ 600.000 / mes</p>
-                        <div class="features">
-                            <span><i class="fas fa-bed"></i> 3</span>
-                            <span><i class="fas fa-bath"></i> 2</span>
-                            <span><i class="fas fa-car"></i> Doble</span>
-                        </div>
-                    </div>
-                </article>
-
-                <!-- Card 5 -->
-                <article class="property-card">
-                    <div class="card-image">
-                        <img src="https://images.unsplash.com/photo-1515263487990-61b07816b324?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60" alt="Departamento">
-                        <span class="tag sale">Departamento en Venta</span>
-                    </div>
-                    <div class="card-content">
-                        <h3>Departamento de Categoría</h3>
-                        <p class="location"><i class="fas fa-map-marker-alt"></i> Godoy Cruz, Mendoza</p>
-                        <p class="price">USD 110.000</p>
-                        <div class="features">
-                            <span><i class="fas fa-building"></i> Piso 5</span>
-                            <span><i class="fas fa-bath"></i> 2</span>
-                            <span><i class="fas fa-swimming-pool"></i> Amenities</span>
-                        </div>
-                    </div>
-                </article>
-
-                <!-- Card 6 -->
-                <article class="property-card">
-                    <div class="card-image">
-                        <img src="https://images.unsplash.com/photo-1560185007-cde436f6a4d0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60" alt="Comercial">
-                        <span class="tag sale">Local en Venta</span>
-                    </div>
-                    <div class="card-content">
-                        <h3>Local Comercial + Oficinas</h3>
-                        <p class="location"><i class="fas fa-map-marker-alt"></i> Guaymallén Centro</p>
-                        <p class="price">USD 180.000</p>
-                        <div class="features">
-                            <span><i class="fas fa-store"></i> 150m²</span>
-                            <span><i class="fas fa-arrows-alt"></i> Frente</span>
-                            <span><i class="fas fa-percentage"></i> Rentabilidad</span>
-                        </div>
-                    </div>
-                </article>
             </div>
         </div>
     </section>
@@ -191,30 +247,30 @@
     <!-- Info Sections Wrapper -->
     <div class="info-sections-wrapper">
         
-        <!-- 1. Intro / Quiénes Somos (Modificado) -->
+        <!-- 1. Quiénes Somos -->
         <section id="experiencia" class="info-section light-bg">
             <div class="container">
-                <h2 class="section-title">Nuestra Filosofía</h2>
-                <div class="text-content" style="text-align: center; max-width: 900px; margin: 0 auto;">
-                    <p>En <strong>GOMEZ & ASOCIADOS</strong> fusionamos la visión técnica de la agrimensura con el dinamismo del mercado inmobiliario.</p>
-                    <p>Entendemos que cada metro cuadrado tiene un valor potencial que va más allá de lo visible. Nuestro enfoque integral nos permite asesorar no solo en la compraventa, sino en la viabilidad técnica, legal y urbanística de cada proyecto.</p>
-                    <br>
-                    <div style="display: flex; justify-content: center; gap: 40px; margin-top: 30px; flex-wrap: wrap;">
-                        <div style="text-align: center;">
-                            <i class="fas fa-file-signature" style="font-size: 3rem; color: var(--secondary-color); margin-bottom: 15px;"></i>
-                            <h4 style="color: var(--primary-color);">Garantía Legal</h4>
-                            <p style="font-size: 0.9rem;">Títulos Supletorios y Saneamiento</p>
-                        </div>
-                        <div style="text-align: center;">
-                            <i class="fas fa-drafting-compass" style="font-size: 3rem; color: var(--secondary-color); margin-bottom: 15px;"></i>
-                            <h4 style="color: var(--primary-color);">Precisión Técnica</h4>
-                            <p style="font-size: 0.9rem;">Mensuras y Fraccionamientos</p>
-                        </div>
-                        <div style="text-align: center;">
-                            <i class="fas fa-handshake" style="font-size: 3rem; color: var(--secondary-color); margin-bottom: 15px;"></i>
-                            <h4 style="color: var(--primary-color);">Gestión Comercial</h4>
-                            <p style="font-size: 0.9rem;">Ventas y Negociación Efectiva</p>
-                        </div>
+                <h2 class="section-title">Quiénes Somos</h2>
+                <div style="display: flex; flex-wrap: wrap; gap: 40px; align-items: center; justify-content: center;">
+                    <div style="flex: 1; min-width: 300px; max-width: 500px;">
+                        <img src="images/nosotros.jpeg" alt="Nosotros" style="height: 600px; width: 100%; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                    </div>
+                    <div style="flex: 1; min-width: 300px; max-width: 600px; text-align: left;">
+                        <h3 style="color: var(--primary-color); margin-bottom: 20px; font-size: 1.5rem;">Trayectoria y Profesionalismo</h3>
+                        <p style="font-size: 1.1rem; line-height: 1.8; margin-bottom: 20px;">
+                            Con más de 20 años en el rubro inmobiliario, en <strong>GOMEZ & ASOCIADOS</strong> nos dedicamos a brindar confianza y garantía en cada operación.
+                        </p>
+                        <p style="font-size: 1.1rem; line-height: 1.8; margin-bottom: 30px;">
+                            Nos especializamos en un servicio integral que abarca:
+                        </p>
+                        <ul style="list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                            <li><i class="fas fa-check" style="color: var(--secondary-color); margin-right: 10px;"></i> Alquileres y Ventas</li>
+                            <li><i class="fas fa-check" style="color: var(--secondary-color); margin-right: 10px;"></i> Casas, Lotes y Deptos</li>
+                            <li><i class="fas fa-check" style="color: var(--secondary-color); margin-right: 10px;"></i> Fincas y Campos</li>
+                            <li><i class="fas fa-check" style="color: var(--secondary-color); margin-right: 10px;"></i> Tasaciones Reales</li>
+                            <li><i class="fas fa-check" style="color: var(--secondary-color); margin-right: 10px;"></i> Agrimensura</li>
+                            <li><i class="fas fa-check" style="color: var(--secondary-color); margin-right: 10px;"></i> Fraccionamientos</li>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -238,7 +294,7 @@
                     <article class="strategy-card">
                         <i class="fas fa-hard-hat"></i>
                         <h3>Visión de Desarrollo</h3>
-                        <p>Al contar con área de agrimensura, podemos destacar potenciales de subdivisión o ampliación que otras inmobiliarias pasan por alto, aumentando el valor percibido.</p>
+                        <p>Al cuntar con el area de agrimensura usted se garantiza seguridad jurídica y precisión técnica sobre la tierra, algo clave antes de comprar, vender, construir o dividir un terreno.</p>
                     </article>
                     <article class="strategy-card">
                         <i class="fas fa-hand-holding-usr"></i>
@@ -296,19 +352,38 @@
                 <p><strong>GOMEZ & ASOCIADOS</strong></p>
                 <p>INMOBILIARIA & AGRIMENSURA</p>
                 <br>
-                <p><i class="fas fa-map-marker-alt"></i> Juan Díaz de Solíz N° 669, Las Cañas – Guaymallén</p>
-                <p><i class="fas fa-phone-alt"></i> 2614676359  |  <i class="fab fa-whatsapp"></i> 2615116458</p>
+                <div style="max-width: 800px; margin: 0 auto 20px auto;">
+                    <p style="margin-bottom: 25px;"><i class="fas fa-map-marker-alt"></i> Juan Díaz de Solíz N° 669, Las Cañas – Guaymallén</p>
+                    
+                    <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 30px;">
+                        <!-- Contacto Izquierda -->
+                        <div style="text-align: left; min-width: 280px; padding: 15px; border: 1px solid #333; border-radius: 8px;">
+                            <p><i class="fas fa-user-tie" style="color: var(--secondary-color); margin-right: 8px;"></i> <strong>Eduardo Alberto Gomez</strong></p>
+                            <p style="font-size: 0.85rem; margin-left: 24px; color: #aaa; margin-bottom: 5px;">Martillero Corredor Público Inmobiliario<br>Matrícula: 1877</p>
+                            <p style="margin-left: 24px;"><i class="fab fa-whatsapp" style="font-size: 1.1rem; margin-right: 5px; color: #25D366;"></i> <a href="https://wa.me/5492614676359" style="color: white;">2614676359</a></p>
+                        </div>
+
+                        <!-- Contacto Derecha -->
+                        <div style="text-align: left; min-width: 280px; padding: 15px; border: 1px solid #333; border-radius: 8px;">
+                            <p><i class="fas fa-user" style="color: var(--secondary-color); margin-right: 8px;"></i> <strong>Javier Baudracco</strong></p>
+                            <p style="font-size: 0.85rem; margin-left: 24px; color: #aaa; margin-bottom: 5px;">Agrimensor<br>Matrícula: 1877</p>
+                            <p style="margin-left: 24px;"><i class="fab fa-whatsapp" style="font-size: 1.1rem; margin-right: 5px; color: #25D366;"></i> <a href="https://wa.me/5492615116458" style="color: white;">2615116458</a></p>
+                        </div>
+                    </div>
+                </div>
+                
                 <p><i class="fas fa-envelope"></i> consultas@inmobiliariagomezyasoc.com</p>
             </div>
             <div class="social-links">
-                <a href="#"><i class="fab fa-instagram"></i></a>
-                <a href="#"><i class="fab fa-facebook-f"></i></a>
-                <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                <a href="https://www.instagram.com/inmobiliariagomezyasoc" target="_blank"><i class="fab fa-instagram"></i></a>
+                <a href="https://www.facebook.com/share/18ADbrGcnV" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://www.tiktok.com/@inmobiliariagomezyasoc" target="_blank"><i class="fab fa-tiktok"></i></a>
             </div>
             <p style="margin-top: 40px; font-size: 0.8rem; color: #555;">&copy; 2026 Gomez & Asociados. Todos los derechos reservados.</p>
         </div>
     </footer>
 
-    <script src="script.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script type="module" src="script.js"></script>
 </body>
 </html>
