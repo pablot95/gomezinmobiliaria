@@ -224,18 +224,19 @@
         <!-- Main Content -->
         <div class="details-grid">
             <div class="info-col">
-                <h3>Descripción</h3>
-                <p id="prop-description" style="white-space: pre-wrap;">...</p>
-
-                <h3>Detalle de Superficies y Operación</h3>
-                <div class="specs-list" id="specs-basics">
-                    <!-- Injected via JS -->
+                
+                <h3 style="border-bottom: 2px solid var(--secondary-color); padding-bottom: 5px; margin-bottom: 20px;">INFORMACIÓN BÁSICA</h3>
+                <div class="specs-grid-custom" id="info-basica-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 40px;">
+                    <!-- JS Injected -->
                 </div>
 
-                <h3>Distribución de Ambientes</h3>
-                <div class="specs-list" id="specs-rooms">
-                    <!-- Injected via JS -->
+                <h3 style="border-bottom: 2px solid var(--secondary-color); padding-bottom: 5px; margin-bottom: 20px;">SUPERFICIES Y MEDIDAS</h3>
+                <div class="specs-grid-custom" id="superficies-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 40px;">
+                    <!-- JS Injected -->
                 </div>
+
+                <h3 style="border-bottom: 2px solid var(--secondary-color); padding-bottom: 5px; margin-bottom: 20px;">DESCRIPCIÓN</h3>
+                <p id="prop-description" style="white-space: pre-wrap; margin-bottom: 40px;">...</p>
 
                 <h3>Características y Servicios</h3>
                 <div class="amenities-list" id="amenities-container">
@@ -506,24 +507,35 @@
                     // Description
                     document.getElementById('prop-description').textContent = data.descripcion;
 
-                    // Specs Basics
-                    const specsBasics = document.getElementById('specs-basics');
-                    specsBasics.innerHTML = `
-                        <div class="spec-item"><i class="fas fa-tag"></i> <span>Operación: ${capitalize(data.operacion)}</span></div>
-                        <div class="spec-item"><i class="fas fa-home"></i> <span>Tipo: ${capitalize(data.tipo)}</span></div>
-                        ${data.superficie.total ? `<div class="spec-item"><i class="fas fa-ruler-combined"></i> <span>Sup. Total: ${data.superficie.total} m²</span></div>` : ''}
-                        ${data.superficie.cubierta ? `<div class="spec-item"><i class="fas fa-ruler-horizontal"></i> <span>Sup. Cubierta: ${data.superficie.cubierta} m²</span></div>` : ''}
-                        ${data.antiguedad ? `<div class="spec-item"><i class="fas fa-calendar-alt"></i> <span>Antiguedad: ${data.antiguedad} años</span></div>` : ''}
-                    `;
+                    // INFORMACIÓN BÁSICA
+                    const infoGrid = document.getElementById('info-basica-grid');
+                    let basicHtml = '';
+                    if(data.ambientes) basicHtml += `<div class="spec-item"><i class="fas fa-door-open"></i> <strong>Ambientes :</strong> ${data.ambientes}</div>`;
+                    if(data.dormitorios) basicHtml += `<div class="spec-item"><i class="fas fa-bed"></i> <strong>Dormitorios :</strong> ${data.dormitorios}</div>`;
+                    if(data.banios) basicHtml += `<div class="spec-item"><i class="fas fa-bath"></i> <strong>Baños :</strong> ${data.banios}</div>`;
+                    if(data.cocheras) basicHtml += `<div class="spec-item"><i class="fas fa-car"></i> <strong>Cocheras :</strong> ${data.cocheras}</div>`;
+                    
+                    // Campos adicionales solicitados
+                    basicHtml += `<div class="spec-item"><i class="fas fa-check-circle"></i> <strong>Condición :</strong> Muy bueno</div>`; 
+                    basicHtml += `<div class="spec-item"><i class="fas fa-layer-group"></i> <strong>Plantas :</strong> 1</div>`; 
+                    if(data.antiguedad) basicHtml += `<div class="spec-item"><i class="fas fa-calendar-alt"></i> <strong>Antigüedad :</strong> ${data.antiguedad} Años</div>`;
+                    basicHtml += `<div class="spec-item"><i class="fas fa-user-check"></i> <strong>Situación :</strong> Habitada</div>`; 
+                    basicHtml += `<div class="spec-item"><i class="fas fa-compass"></i> <strong>Orientación :</strong> - </div>`; 
+                    basicHtml += `<div class="spec-item"><i class="fas fa-hand-holding-usd"></i> <strong>Crédito :</strong> No especifica</div>`; 
+                    
+                    // Agrego Tipo y Operacion aqui tambien
+                    basicHtml += `<div class="spec-item"><i class="fas fa-home"></i> <strong>Tipo :</strong> ${capitalize(data.tipo)}</div>`;
 
-                    // Specs Rooms
-                    const specsRooms = document.getElementById('specs-rooms');
-                    specsRooms.innerHTML = `
-                        ${data.ambientes ? `<div class="spec-item"><i class="fas fa-door-open"></i> <span>Ambientes: ${data.ambientes}</span></div>` : ''}
-                        ${data.dormitorios ? `<div class="spec-item"><i class="fas fa-bed"></i> <span>Dormitorios: ${data.dormitorios}</span></div>` : ''}
-                        ${data.banios ? `<div class="spec-item"><i class="fas fa-bath"></i> <span>Baños: ${data.banios}</span></div>` : ''}
-                        ${data.cocheras ? `<div class="spec-item"><i class="fas fa-car"></i> <span>Cocheras: ${data.cocheras}</span></div>` : ''}
-                    `;
+                    infoGrid.innerHTML = basicHtml;
+
+                    // SUPERFICIES
+                    const surfGrid = document.getElementById('superficies-grid');
+                    let surfHtml = '';
+                    if(data.superficie.total) surfHtml += `<div class="spec-item"><i class="fas fa-ruler-combined"></i> <strong>Terreno :</strong> ${data.superficie.total} m²</div>`;
+                    if(data.superficie.cubierta) surfHtml += `<div class="spec-item"><i class="fas fa-ruler-horizontal"></i> <strong>Cubierta :</strong> ${data.superficie.cubierta} m²</div>`;
+                    if(data.superficie.cubierta) surfHtml += `<div class="spec-item"><i class="fas fa-building"></i> <strong>Total Construido :</strong> ${data.superficie.cubierta} m²</div>`; 
+                    
+                    surfGrid.innerHTML = surfHtml;
 
                     // Amenities
                     const amenitiesContainer = document.getElementById('amenities-container');
