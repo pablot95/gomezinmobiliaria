@@ -105,6 +105,15 @@ ul {
     color: var(--white);
 }
 
+.mobile-menu-btn {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--secondary-color);
+    font-size: 1.8rem;
+    cursor: pointer;
+}
+
 /* Hero Section */
 .hero-section {
     position: relative;
@@ -181,6 +190,9 @@ ul {
     gap: 20px;
     justify-content: center;
     cursor: pointer;
+    background: rgba(10, 10, 10, 0.9) !important; /* Fondo negro casi opaco */
+    padding: 30px !important; /* ORIGINAL padding */
+    max-width: 1100px !important;
 }
 
 .form-group {
@@ -191,12 +203,13 @@ ul {
 .search-form select, 
 .search-form input {
     width: 100%;
-    padding: 15px;
+    padding: 15px; /* ORIGINAL padding */
+    height: auto;
     border: 1px solid #444;
     background-color: #222;
     color: #fff;
     border-radius: 0;
-    font-size: 1rem;
+    font-size: 1rem; /* ORIGINAL fontSize */
     cursor: pointer;
 }
 
@@ -590,7 +603,7 @@ ul {
 }
 
 .tiny-select { width: 80px; }
-.fg-inputs input[type="number"] { width: 80px; }
+.fg-inputs input[type="number"] { width: auto; min-width: 100px; }
 
 .grid-4 {
     display: grid;
@@ -599,11 +612,12 @@ ul {
 }
 
 .check-label {
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     display: flex;
     align-items: center;
-    gap: 5px;
-    white-space: nowrap;
+    gap: 8px;
+    white-space: normal; /* Permitir salto de línea */
+    line-height: leading-tight;
 }
 
 .hl-check {
@@ -630,9 +644,133 @@ ul {
 }
 
 @media(max-width: 768px) {
+    /* Existing basic resets */
     .search-main-row { flex-direction: column; }
     .filter-group-cols { grid-template-columns: 1fr; }
-    .grid-4 { grid-template-columns: 1fr 1fr; }
+    .grid-4 { grid-template-columns: 1fr; } /* Force 1 col for filters */
+
+    /* 1. Hero Adjustments */
+    .hero-section {
+        min-height: auto !important; /* Allow natural height */
+        padding-bottom: 20px;
+        height: auto !important;
+    }
+    
+    .hero-overlay {
+        padding: 100px 15px 40px 15px; /* Reduce side paddings */
+        min-height: auto; 
+    }
+    
+    .hero-logo {
+        width: 120px; /* Smaller logo */
+        height: 120px;
+        margin-bottom: 20px;
+    }
+    
+    .hero-content h1 {
+        font-size: 1.8rem; /* Smaller title */
+        line-height: 1.2;
+    }
+    
+    .hero-content p {
+        font-size: 1rem;
+    }
+
+    /* 2. Search Form Adjustments */
+    .search-form {
+        padding: 20px 15px !important;
+        margin: 0 auto;
+        width: 100% !important;
+        border-radius: 4px; 
+    }
+    
+    .search-main-row {
+        align-items: stretch;
+    }
+
+    .search-main-row .form-group {
+        min-width: 100%; /* Force inputs to stack full width */
+        margin-bottom: 15px;
+        flex: none;
+    }
+    
+    .btn-search {
+        width: 100%; /* Full width button */
+        padding: 15px !important;
+        margin-top: 10px;
+    }
+    
+    /* 3. Properties Grid */
+    #properties-container {
+        grid-template-columns: 1fr; /* 1 card per row */
+        gap: 20px;
+        padding: 0 10px;
+    }
+    
+    /* 4. General Layout */
+    .container {
+        padding: 0 15px;
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    /* Timeline adjustments */
+    .timeline-item {
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: left;
+        gap: 10px;
+    }
+
+    .timeline-number {
+        font-size: 2.5rem;
+    }
+
+    /* Navbar mobile tweaks (assuming .navbar exists) */
+    .logo {
+        font-size: 1.2rem;
+    }
+    
+    /* 6. Header Mobile Specifics */
+    .main-header h1 {
+        display: none; /* Hide header text on mobile */
+    }
+
+    .mobile-menu-btn {
+        display: block; /* Show hamburger */
+    }
+
+    .main-nav {
+        position: fixed;
+        top: 60px;
+        right: -100%;
+        width: 70%;
+        height: 100vh; /* Better coverage */
+        background: rgba(10,10,10,0.98); /* Less transparent */
+        border-left: 2px solid var(--secondary-color);
+        transition: right 0.3s ease;
+        padding: 40px 20px;
+        z-index: 9999;
+        display: flex !important; /* Force flex for column layout */
+        flex-direction: column;
+        visibility: hidden; /* Hide when closed */
+    }
+
+    .main-nav.active {
+        right: 0;
+        visibility: visible;
+    }
+
+
+    .main-nav ul {
+        flex-direction: column;
+        align-items: center;
+        gap: 25px;
+    }
+    
+    .main-nav a {
+        font-size: 1.2rem;
+    }
 }
 
 /* --- FIX HERO & SEARCH --- */
@@ -677,9 +815,31 @@ ul {
     max-width: 1100px !important;
 }
 
+@media(max-width: 768px) {
+    .search-form {
+        padding: 20px 15px !important;
+        width: 100% !important;
+    }
+    .search-form input, .search-form select {
+        padding: 15px 10px !important;
+        font-size: 1rem !important;
+        height: 50px !important;
+    }
+    .hero-logo {
+        width: 120px;
+        height: 120px;
+    }
+    .search-container{
+        padding: 20px;
+        width: 100%;
+    }
+}
+
+
 .search-main-row {
     justify-content: center; /* Centrar elementos */
 }
+
 
 /* Inputs High Contrast */
 .search-form input, 
@@ -752,6 +912,13 @@ ul {
 
 .fg-inputs {
     justify-content: flex-start; /* Inputs alineados inicio */
+}
+
+.fg-inputs span {
+    color: #ddd;
+    font-size: 0.9rem; 
+    white-space: normal;
+    font-weight: 500;
 }
 
 .check-label {

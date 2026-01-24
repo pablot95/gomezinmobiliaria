@@ -9,14 +9,29 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <style>
-        .detail-container { padding: 40px 20px; background: #fff; }
-        .property-header { border-bottom: 2px solid var(--secondary-color); padding-bottom: 20px; margin-bottom: 30px; }
-        .property-header h1 { font-size: 2.5rem; color: var(--primary-color); margin-bottom: 10px; }
-        .property-header .price-container { font-size: 1.8rem; color: var(--secondary-color); font-weight: bold; margin-top: 5px; }
+        .detail-container { padding: 40px 20px; background: #fff; max-width: 1400px; margin: 0 auto; }
+        .property-header { 
+            border-bottom: 2px solid var(--secondary-color); 
+            margin-top: 0px;
+            margin-left: 0px;
+            margin-bottom: 40px;
+            max-width: 1400px;
+        }
+        .property-header h1 { font-size: 2.5rem; color: var(--primary-color); margin-bottom: 0px; }
+        .property-header .price-container { font-size: 1.8rem; color: var(--secondary-color); font-weight: bold; margin-top: 0px; }
         .property-header .price-expensas { font-size: 1.2rem; color: #666; font-weight: normal; margin-left: 10px; }
         
-        /* Logo Fix */
-        .logo-link img { max-height: 50px; width: auto; display: block; border-radius: 50%; }
+        /* PROTECTION AGAINST GIANT IMAGES */
+        img { max-width: 100%; height: auto; display: block; }
+
+        /* Logo Fix Global */
+        .logo-link img { max-height: 60px !important; width: auto !important; display: block; border-radius: 0 !important; }
+        
+        .header-logo-img { max-height: 150px; width: auto; }
+        @media(max-width: 768px) {
+            .header-logo-img { display: none; } 
+            .property-header { display: block !important; }
+        }
 
         /* Gallery Fixed Layout */
         .gallery-grid { 
@@ -24,11 +39,10 @@
             grid-template-columns: 1.5fr minmax(0, 1fr); 
             gap: 10px; 
             height: 550px; 
-            margin-bottom: 40px; 
-            margin-top: 60px;
-            max-width: 1400px; 
-            margin-left: auto; 
-            margin-right: auto; 
+            margin-bottom: 10px; 
+            margin-top: 55px;
+            width: 100%;
+            max-width: 100%; /* Containment */
             overflow: hidden; 
         }
         
@@ -53,19 +67,17 @@
 
         .gallery-side { 
             display: grid; 
-            grid-template-rows: repeat(2, minmax(0, 1fr)); /* Force equal split without growing */
+            grid-template-rows: repeat(2, minmax(0, 1fr)); 
             gap: 10px; 
             height: 100%; 
-            min-height: 0;
-            min-width: 0;
-            overflow: hidden;
+            overflow: hidden; /* Prevent spill */
         }
-        
+
         .gallery-thumb-container { 
             position: relative; 
             width: 100%; 
             height: 100%; 
-            min-height: 0; /* Crucial for grid overflow */
+            min-height: 0;
             min-width: 0;
             overflow: hidden; 
             cursor: pointer; 
@@ -76,8 +88,6 @@
         .gallery-thumb { 
             width: 100%; 
             height: 100%; 
-            max-width: 100%;
-            max-height: 100%;
             object-fit: cover; 
             display: block;
             background: #eee; 
@@ -87,16 +97,24 @@
         
         /* Mobile adjustment */
         @media(max-width: 768px) {
+            .detail-container { padding: 0; }
             .gallery-grid { 
                 display: flex; 
                 flex-direction: column; 
                 height: auto; 
+                margin-bottom: 20px;
+                margin-top: 80px;
             }
             .gallery-main-container { 
-                height: 300px; 
+                height: 50vh; 
+                width: 100%;
+                border-radius: 0;
             }
             .gallery-side { 
-                display: none; /* Hide thumbs on mobile */
+                display: none; 
+            }
+            .property-header, .details-grid {
+                padding: 0 20px;
             }
         }
 
@@ -158,7 +176,7 @@
         .map-box { width: 100%; height: 300px; background: #eee; margin-top: 20px; display: flex; align-items: center; justify-content: center; }
 
         @media(max-width: 768px) {
-            .details-grid { grid-template-columns: 1fr; }
+            .details-grid { grid-template-columns: 1fr; padding: 0 20px; }
             .gallery-thumb-container { display: none; }
         }
     </style>
@@ -167,19 +185,12 @@
 
     <header class="main-header">
         <div class="container">
-            <a href="index.html" class="logo-link">
-                <img src="images/logo.png" alt="">
+            <a href="index.html" style="display: flex; align-items: center; gap: 10px; color: white; text-transform: uppercase; font-weight: bold; text-decoration: none;">
+                <i class="fas fa-arrow-left"></i> Inicio
             </a>
-            <nav class="main-nav">
-                <ul>
-                    <li><a href="index.html">Inicio</a></li>
-                </ul>
-            </nav>
         </div>
     </header>
 
-    <div class="container detail-container" id="detail-content">
-        <!-- Gallery -->
         <div class="gallery-grid">
             <div class="gallery-main-container" onclick="openLightbox(0)">
                 <img src="" class="gallery-main" id="img-main" alt="Principal">
@@ -189,17 +200,24 @@
             </div>
         </div>
 
-        <!-- Header Propiedad -->
-        <div class="property-header">
+    <div class="detail-container" id="detail-content">
+        <!-- Gallery -->
+
+                    <!-- Header Propiedad -->
+        <div class="property-header" style="display: flex; justify-content: space-between; align-items: center;">
             <div>
-                 <span id="prop-type-tag" style="background: var(--secondary-color); color: white; padding: 5px 10px; border-radius: 4px; font-size: 0.8rem; text-transform: uppercase;">...</span>
-                 <h1 id="prop-title" style="margin-top:10px;">Cargando...</h1>
-                 <p id="prop-location" style="font-size: 1.1rem; color: #666; margin-bottom: 15px;"><i class="fas fa-map-marker-alt"></i> ...</p>
-                 
-                 <div class="price-container">
+                <span id="prop-type-tag" style="background: var(--secondary-color); color: white; padding: 5px 10px; border-radius: 4px; font-size: 1.3rem; text-transform: uppercase;">...</span>
+                <h1 id="prop-title" style="margin-top: 0px;">Cargando...</h1>
+                <p id="prop-location" style="font-size: 1.3rem; color: #666; margin-bottom: 5px;"><i class="fas fa-map-marker-alt"></i> ...</p>
+                
+                <div class="price-container">
                     <span id="prop-price">...</span>
                     <span id="prop-expensas" class="price-expensas"></span>
-                 </div>
+                </div>
+            </div>
+            
+            <div class="property-logo-container" style="padding-left: 0px;">
+                <img src="images/logo.png" alt="Inmobiliaria Gomez" class="header-logo-img">
             </div>
         </div>
 
@@ -240,9 +258,7 @@
                     </div>
                     <form onsubmit="contactAgent(event)">
                         <input type="text" id="contact-name" placeholder="Nombre" style="width:100%; margin-bottom:10px; padding:8px;" required>
-                        <input type="tel" id="contact-phone" placeholder="Teléfono" style="width:100%; margin-bottom:10px; padding:8px;" required>
                         <textarea id="contact-msg" placeholder="Mensaje" rows="4" style="width:100%; margin-bottom:10px; padding:8px;" required></textarea>
-                        <button style="width:100%; background: var(--secondary-color); color:white; border:none; padding:10px; cursor:pointer;">ENVIAR CONSULTA</button>
                     </form>
                     <button onclick="contactWhatsapp()" style="width:100%; background: #25D366; color:white; border:none; padding:10px; margin-top:10px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:5px;">
                         <i class="fab fa-whatsapp"></i> Whatsapp
@@ -253,7 +269,7 @@
     </div>
 
     <!-- Lightbox Modal -->
-    <div id="lightbox" class="lightbox">
+    <div id="lightbox" class="lightbox" style="display: none;">
         <span class="close-lightbox" onclick="closeLightbox()">&times;</span>
         <img class="lightbox-content" id="lightbox-img">
         <div class="lightbox-nav">
@@ -335,6 +351,33 @@
         function updateLightbox() {
             const imgUrl = window.allImages[window.currentSlideIndex];
             document.getElementById('lightbox-img').src = imgUrl;
+        }
+
+        // --- Swipe Logic for Lightbox ---
+        let touchStartX = 0;
+        let touchEndX = 0;
+        const lightboxEl = document.getElementById('lightbox');
+
+        if (lightboxEl) {
+            lightboxEl.addEventListener('touchstart', e => {
+                touchStartX = e.changedTouches[0].screenX;
+            }, {passive: true});
+
+            lightboxEl.addEventListener('touchend', e => {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe();
+            }, {passive: true});
+        }
+
+        function handleSwipe() {
+            if (touchEndX < touchStartX - 50) {
+                // Deslizar izquierda -> Siguiente
+                window.changeSlide(1);
+            }
+            if (touchEndX > touchStartX + 50) {
+                // Deslizar derecha -> Anterior
+                window.changeSlide(-1);
+            }
         }
         
         // Close on escape key

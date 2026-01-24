@@ -216,3 +216,16 @@ function capitalize(str) {
     if(!str) return '';
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
+
+// Mobile Menu Toggle
+window.toggleMenu = function() {
+    const nav = document.getElementById('main-nav');
+    nav.classList.toggle('active');
+}
+
+window.closeMenu = function() {
+    const nav = document.getElementById('main-nav');
+    if(nav.classList.contains('active')) {
+        nav.classList.remove('active');
+    }
+}

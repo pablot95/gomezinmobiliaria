@@ -18,13 +18,18 @@
                 <!-- Solo Texto -->
                 <h1 style="font-size: 1.5rem; color: var(--secondary-color); font-weight: 300; letter-spacing: 1px;">INMOBILIARIA GOMEZ & ASOCIADOS</h1>
             </a>
-            <nav class="main-nav">
+            
+            <button class="mobile-menu-btn" onclick="toggleMenu()" aria-label="Abrir Menú">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <nav class="main-nav" id="main-nav">
                 <ul>
-                    <li><a href="#inicio">Inicio</a></li>
-                    <li><a href="#propiedades">Propiedades</a></li>
-                    <li><a href="#agrimensura">Agrimensura</a></li>
-                    <li><a href="#experiencia">Experiencia</a></li>
-                    <li><a href="#contacto">Contacto</a></li>
+                    <li><a href="#inicio" onclick="closeMenu()">Inicio</a></li>
+                    <li><a href="#propiedades" onclick="closeMenu()">Propiedades</a></li>
+                    <li><a href="#agrimensura" onclick="closeMenu()">Agrimensura</a></li>
+                    <li><a href="#experiencia" onclick="closeMenu()">Experiencia</a></li>
+                    <li><a href="#contacto" onclick="closeMenu()">Contacto</a></li>
                 </ul>
             </nav>
         </div>
