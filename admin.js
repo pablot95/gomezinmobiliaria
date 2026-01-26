@@ -1,12 +1,12 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js";
+// Storage import removed for Hostinger PHP upload script
 import firebaseConfig from "./firebase-config.js";
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const storage = getStorage(app);
+// const storage = getStorage(app); // Not used anymore
 
 const propertyForm = document.getElementById('propertyForm');
 const messageDiv = document.getElementById('message');
@@ -66,15 +66,31 @@ window.deleteProperty = async function(id) {
 }
 
 async function uploadImage(file) {
-    const fileName = `${Date.now()}_${file.name}`;
-    // Create a reference to 'images/mountains.jpg'
-    const storageRef = ref(storage, 'propiedades/' + fileName);
-    
-    // Upload file
-    await uploadBytes(storageRef, file);
-    
-    // Get URL
-    return await getDownloadURL(storageRef);
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try {
+        // Point to the PHP script in the root directory relative to /admin/
+        const response = await fetch('../upload.php', {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP Error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        
+        if (data.error) {
+            throw new Error(data.error);
+        }
+
+        return data.url;
+    } catch (error) {
+        console.error('Error uploading image to Hostinger:', error);
+        throw error;
+    }
 }
 
 propertyForm.addEventListener('submit', async (e) => {
@@ -100,6 +116,13 @@ propertyForm.addEventListener('submit', async (e) => {
         if (galleryFiles.length > 0) {
             const uploadPromises = Array.from(galleryFiles).map(file => uploadImage(file));
             galleryUrls = await Promise.all(uploadPromises);
+        }
+
+        // Upload Video
+        const videoFile = document.getElementById('videoFile').files[0];
+        let videoUrl = null;
+        if (videoFile) {
+            videoUrl = await uploadImage(videoFile);
         }
 
         // 2. Prepare Data
@@ -144,6 +167,7 @@ propertyForm.addEventListener('submit', async (e) => {
                 principal: mainImageUrl,
                 galeria: galleryUrls
             },
+            video: videoUrl,
             descripcion: document.getElementById('descripcion').value,
             fechaCreacion: new Date()
         };
