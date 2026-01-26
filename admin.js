@@ -127,6 +127,7 @@ propertyForm.addEventListener('submit', async (e) => {
                 agua: document.getElementById('agua').checked,
                 luz: document.getElementById('luz').checked,
                 gas: document.getElementById('gas').checked,
+                gas_envasado: document.getElementById('gas_envasado').checked,
                 cloacas: document.getElementById('cloacas').checked,
                 internet: document.getElementById('internet').checked,
                 pavimento: document.getElementById('pavimento').checked,

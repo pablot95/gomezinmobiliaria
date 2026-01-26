@@ -269,8 +269,18 @@
         </div>
     </div>
 
+    <!-- Similar Properties Section -->
+    <section id="similar-properties-section" style="display: none; background: #f9f9f9; padding: 40px 0; border-top: 1px solid #ddd;">
+        <div class="container" style="max-width: 1400px; margin: 0 auto; padding: 0 20px;">
+            <h2 class="section-title" style="margin-bottom: 30px;">Propiedades Similares</h2>
+            <div class="properties-grid" id="similar-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px;">
+                <!-- JS Injected -->
+            </div>
+        </div>
+    </section>
+
     <!-- Lightbox Modal -->
-    <div id="lightbox" class="lightbox" style="display: none;">
+    <div id="lightbox" class="lightbox">
         <span class="close-lightbox" onclick="closeLightbox()">&times;</span>
         <img class="lightbox-content" id="lightbox-img">
         <div class="lightbox-nav">
@@ -321,7 +331,7 @@
     
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, collection, query, where, getDocs, limit } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
         import firebaseConfig from "./firebase-config.js";
 
         const app = initializeApp(firebaseConfig);
@@ -404,12 +414,12 @@
             const msg = document.getElementById('contact-msg').value;
             
             const text = `Hola, veo la propiedad: ${window.currentPropTitle}. %0A${msg} %0A%0AMis datos: ${name} (${phone})`;
-            window.open(`https://wa.me/5492615116458?text=${text}`, '_blank');
+            window.open(`https://wa.me/5492614676359?text=${text}`, '_blank');
         }
 
         window.contactWhatsapp = function() {
             const text = `Hola, estoy interesado en la propiedad: ${window.currentPropTitle}`;
-            window.open(`https://wa.me/5492615116458?text=${text}`, '_blank');
+            window.open(`https://wa.me/5492614676359?text=${text}`, '_blank');
         }
 
         document.addEventListener('DOMContentLoaded', async () => {
@@ -540,7 +550,7 @@
                     // Amenities
                     const amenitiesContainer = document.getElementById('amenities-container');
                     const charMap = {
-                        agua: 'Agua Corriente', luz: 'Luz Eléctrica', gas: 'Gas Natural', cloacas: 'Cloacas',
+                        agua: 'Agua Corriente', luz: 'Luz Eléctrica', gas: 'Gas Natural', gas_envasado: 'Gas Envasado', cloacas: 'Cloacas',
                         internet: 'Internet', pavimento: 'Pavimento', pileta: 'Pileta', parrilla: 'Parrilla',
                         jardin: 'Jardín', seguridad: 'Seguridad', mascotas: 'Apto Mascotas', profesional: 'Apto Profesional',
                         escritura: 'Escritura', planos: 'Planos'
@@ -568,8 +578,11 @@
                 attribution: '&copy; Google Maps'
             }).addTo(map);
             L.marker([lat, lng]).addTo(map).bindPopup(data.titulo);
-            document.getElementById('prop-coords').textContent = `Coordenadas: ${lat}, ${lng}`;
+            
         }
+
+        // LOAD SIMILAR
+        loadSimilarProperties(data, id);
 
                 } else {
                     document.getElementById('detail-content').innerHTML = '<h2 style="text-align:center;">La propiedad no existe o fue eliminada.</h2>';
@@ -580,6 +593,113 @@
                  document.getElementById('detail-content').innerHTML = '<h2 style="text-align:center;">Error al cargar la propiedad.</h2>';
              }
         });
+
+        async function loadSimilarProperties(currentProp, currentId) {
+            const container = document.getElementById('similar-container');
+            const section = document.getElementById('similar-properties-section');
+            if (!container) return;
+
+            try {
+                // 1. Determine price range
+                const price = parseFloat(currentProp.precio);
+                if (isNaN(price)) return; // No similarity by price if no price
+
+                let minP, maxP;
+                if(currentProp.operacion.toLowerCase() === 'venta') {
+                    minP = price - 50000;
+                    maxP = price + 50000;
+                    if(minP < 0) minP = 0;
+                } else if(currentProp.operacion.toLowerCase() === 'alquiler') {
+                     minP = price - 150000;
+                     maxP = price + 150000;
+                     if(minP < 0) minP = 0;
+                } else {
+                    // Default range for others
+                    minP = price * 0.8;
+                    maxP = price * 1.2;
+                }
+
+                const collRef = collection(db, "propiedades");
+                // We fetch matches by operation and filter locally to avoid index issues
+                const q = query(
+                    collRef, 
+                    where("operacion", "==", currentProp.operacion),
+                    limit(50) // Reasonable limit to filter from
+                );
+                
+                const snap = await getDocs(q);
+                let candidates = [];
+
+                snap.forEach(d => {
+                    if(d.id === currentId) return;
+                    const p = d.data();
+                    
+                    // Filter by currency
+                    if(p.moneda !== currentProp.moneda) return;
+                    
+                    // Filter by price
+                    const pPrice = parseFloat(p.precio);
+                    if(isNaN(pPrice)) return;
+
+                    if(pPrice >= minP && pPrice <= maxP) {
+                        candidates.push({ id: d.id, ...p });
+                    }
+                });
+
+                // Top 3
+                candidates = candidates.slice(0, 3);
+
+                if(candidates.length > 0) {
+                    section.style.display = 'block';
+                    
+                    candidates.forEach(prop => {
+                        const card = document.createElement('article');
+                        // Reuse basic card styling
+                        card.className = 'property-card';
+                        card.style.background = '#fff';
+                        card.style.borderRadius = '8px';
+                        card.style.overflow = 'hidden';
+                        card.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
+                        card.style.cursor = 'pointer';
+                        card.onclick = () => window.open(`property-detail.html?id=${prop.id}`, '_blank');
+                        
+                        let tagClass = 'sale'; // Default color
+                        let tagColor = '#27ae60';
+                        if (prop.operacion === 'alquiler') tagColor = '#e67e22';
+
+                        const priceDisplay = prop.moneda ? `${prop.moneda} ${prop.precio}` : prop.precio;
+                        const titulo = prop.titulo || 'Sin Título';
+                        const loc = prop.ubicacion || '';
+                        const img = prop.imagenes?.principal || 'https://via.placeholder.com/800x600?text=No+Image';
+
+                        // Ambientes/ etc
+                        let feats = '';
+                        if(prop.ambientes) feats += `<span><i class="fas fa-home"></i> ${prop.ambientes} Amb</span>`;
+                        if(prop.superficie?.total) feats += `<span style="margin-left:10px;"><i class="fas fa-ruler"></i> ${prop.superficie.total}m²</span>`;
+
+                        card.innerHTML = `
+                            <div style="position:relative; height: 200px;">
+                                <img src="${img}" style="width:100%; height:100%; object-fit:cover;">
+                                <span style="position:absolute; top:10px; left:10px; background:${tagColor}; color:white; padding:4px 8px; border-radius:4px; font-size:0.8rem; text-transform:uppercase;">
+                                    ${capitalize(prop.tipo)} en ${capitalize(prop.operacion)}
+                                </span>
+                            </div>
+                            <div style="padding: 15px;">
+                                <h3 style="font-size: 1.1rem; margin: 0 0 10px 0; color:#333;">${titulo}</h3>
+                                <p style="color: #666; font-size: 0.9rem; margin-bottom: 10px;"><i class="fas fa-map-marker-alt"></i> ${loc}</p>
+                                <div style="font-weight:bold; color:var(--secondary-color); font-size:1.2rem; margin-bottom:10px;">${priceDisplay}</div>
+                                <div style="display:flex; flex-wrap:wrap; font-size:0.8rem; color:#555;">
+                                    ${feats}
+                                </div>
+                            </div>
+                        `;
+                        container.appendChild(card);
+                    });
+                }
+            } catch(e) {
+                console.error("Error similar props", e);
+            }
+        }
 
         function capitalize(str) {
             if(!str) return '';

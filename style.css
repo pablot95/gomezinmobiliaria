@@ -688,8 +688,17 @@ ul {
 @media(max-width: 768px) {
     /* Existing basic resets */
     .search-main-row { flex-direction: column; }
-    .filter-group-cols { grid-template-columns: 1fr; }
-    .grid-4 { grid-template-columns: 1fr; } /* Force 1 col for filters */
+    
+    /* MODIFIED: 2 cols for advanced filters on mobile instead of 1 */
+    .filter-group-cols { 
+        grid-template-columns: repeat(2, 1fr); 
+        gap: 15px;
+    }
+    
+    /* Make sure inputs dont overflow in grid-4 on mobile */
+    .grid-4 { 
+        grid-template-columns: repeat(2, 1fr); 
+    } 
 
     /* 1. Hero Adjustments */
     .hero-section {

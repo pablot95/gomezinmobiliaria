@@ -121,6 +121,7 @@
                             <h4>Precio y Costos</h4>
                             <div class="fg-inputs">
                                 <select name="moneda" class="tiny-select">
+                                    <option value="" selected>Moneda</option>
                                     <option value="USD">USD</option>
                                     <option value="ARS">ARS</option>
                                 </select>
@@ -164,22 +165,27 @@
                             </div>
                             <div class="col-checks">
                                 <h4>Servicios</h4>
-                                <label><input type="checkbox"> Agua Corriente</label>
-                                <label><input type="checkbox"> Luz</label>
-                                <label><input type="checkbox"> Gas Natural</label>
-                                <label><input type="checkbox"> Cloacas</label>
-                                <label><input type="checkbox"> Internet/Wifi</label>
-                                <label><input type="checkbox"> Pavimento</label>
+                                <label><input type="checkbox" name="agua"> Agua Corriente</label>
+                                <label><input type="checkbox" name="luz"> Luz</label>
+                                <label><input type="checkbox" name="gas"> Gas Natural</label>
+                                <label><input type="checkbox" name="cloacas"> Cloacas</label>
+                                <label><input type="checkbox" name="internet"> Internet/Wifi</label>
+                                <label><input type="checkbox" name="pavimento"> Pavimento</label>
                             </div>
                             <div class="col-checks">
                                 <h4>Comodidades</h4>
-                                <label><input type="checkbox"> Pileta</label>
-                                <label><input type="checkbox"> Parrilla</label>
-                                <label><input type="checkbox"> Quincho</label>
-                                <label><input type="checkbox"> SUM</label>
-                                <label><input type="checkbox"> Seguridad</label>
-                                <label><input type="checkbox"> Cochera</label>
+                                <label><input type="checkbox" name="pileta"> Pileta</label>
+                                <label><input type="checkbox" name="parrilla"> Parrilla</label>
+                                <label><input type="checkbox" name="quincho"> Quincho</label>
+                                <label><input type="checkbox" name="sum"> SUM</label>
+                                <label><input type="checkbox" name="seguridad"> Seguridad</label>
+                                <label><input type="checkbox" name="check_cochera"> Cochera</label>
                             </div>
+                        </div>
+                        
+                        <!-- Add Apply Button -->
+                        <div style="width: 100%; display: flex; justify-content: center; margin-top: 20px; border-top: 1px solid #eee; padding-top: 20px;">
+                            <button type="button" class="btn-search" onclick="filterProperties()" style="width: 200px;">APLICAR FILTROS</button>
                         </div>
                     </div>
                 </form>
@@ -219,7 +225,7 @@
                     </ul>
                     <p style="margin-top: 20px;">
                         Nuestro equipo de agrimensores matriculados garantiza la seguridad jurídica de su inmueble. 
-                        Antes de realizar cualquier operación inmobiliaria, asegúrese de que los límites y la documentación estén en orden.
+                        Antes de realizar cualquier operación inmobiliaria, asegurandole de que los límites y la documentación estén en orden.
                     </p>
                 </div>
 

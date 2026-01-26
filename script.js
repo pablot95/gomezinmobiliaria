@@ -70,20 +70,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Load Properties
     await loadProperties();
 
-    // Event Listener for Search Button
-    const btnSearch = document.querySelector('.btn-search');
-    if (btnSearch) {
-        btnSearch.addEventListener('click', function(e) {
-            e.preventDefault(); // Prevent form submission reloads if inside form
-            filterProperties();
-            
-            // Scroll to results
-            const propertiesSection = document.getElementById('properties-container');
-            if (propertiesSection) {
-                propertiesSection.scrollIntoView({ behavior: 'smooth' });
-            }
-        });
-    }
 });
 
 async function loadProperties() {
@@ -174,42 +160,190 @@ function renderProperties(propertiesToRender) {
     }
 }
 
-function filterProperties() {
-    // Get filter values
+// Filter Properties
+window.filterProperties = function() {
+    // Basic filters
     const operacion = document.querySelector('select[name="operacion"]').value;
     const tipo = document.querySelector('select[name="tipo"]').value;
     const zonaField = document.querySelector('select[name="zona"]');
     const zona = zonaField ? zonaField.value : '';
+
+    // Advanced filters
+    const moneda = document.querySelector('select[name="moneda"]')?.value;
     
-    // Advanced fields logic could be added here
+    // Helper for number inputs
+    const getNum = (name) => {
+        const el = document.querySelector(`input[name="${name}"]`);
+        return el && el.value ? parseFloat(el.value) : null;
+    };
+
+    const precioDesde = getNum('precio_desde') || 0;
+    const precioHasta = getNum('precio_hasta') || Infinity;
     
+    const ambientes = getNum('ambientes') || 0;
+    const dormitorios = getNum('dormitorios') || 0;
+    const banios = getNum('banios') || 0;
+    const cocheras = getNum('cocheras') || 0;
+
+    const supCubDesde = getNum('sup_cub_desde') || 0;
+    const supCubHasta = getNum('sup_cub_hasta') || Infinity;
+    const supTotDesde = getNum('sup_tot_desde') || 0;
+    const supTotHasta = getNum('sup_tot_hasta') || Infinity;
+
+    // Checkboxes (Characteristics)
+    const getCheck = (name) => {
+        const el = document.querySelector(`input[name="${name}"]`);
+        return el ? el.checked : false;
+    };
+
+    const aptoMascota = getCheck('mascota');
+    const aptoProfesional = getCheck('profesional');
+    const usoComercial = getCheck('comercial');
+    const aptoCredito = getCheck('credito');
+
+    // Servicios
+    const agua = getCheck('agua');
+    const luz = getCheck('luz');
+    const gas = getCheck('gas');
+    const cloacas = getCheck('cloacas');
+    const internet = getCheck('internet');
+    const pavimento = getCheck('pavimento');
+
+    // Comodidades
+    const pileta = getCheck('pileta');
+    const parrilla = getCheck('parrilla');
+    const quincho = getCheck('quincho');
+    const sum = getCheck('sum');
+    const seguridad = getCheck('seguridad');
+    const checkCochera = getCheck('check_cochera');
+
     const filtered = allProperties.filter(prop => {
         let matches = true;
 
+        // Basic
         if (operacion && prop.operacion !== operacion) matches = false;
         if (tipo && prop.tipo !== tipo) matches = false;
         
-        // Zona filtering with backward compatibility
+        // Zona
         if (zona) {
             const propZonaNorm = prop.zona ? prop.zona.trim() : '';
             const propUbicacionNorm = prop.ubicacion ? prop.ubicacion.toLowerCase() : '';
             const searchZonaNorm = zona.trim();
             const searchZonaLower = zona.toLowerCase();
-
-            // Match if:
-            // 1. prop.zona exists and matches selected zone EXACTLY
-            // 2. OR prop.zona is missing/empty AND prop.ubicacion contains the selected zone text
-            
             const zonaMatch = (propZonaNorm === searchZonaNorm);
             const textMatch = propUbicacionNorm.includes(searchZonaLower);
-
             if (!zonaMatch && !textMatch) matches = false;
+        }
+
+        // --- Advanced Filters ---
+        
+        // Moneda
+        if (moneda && prop.moneda !== moneda) matches = false;
+
+        // Precio
+        const propPrecio = parseFloat(prop.precio);
+        if (!isNaN(propPrecio)) {
+            if (propPrecio < precioDesde) matches = false;
+            if (precioHasta !== Infinity && propPrecio > precioHasta) matches = false;
+        }
+
+        // Ambientes / Dormitorios / Baños / Cocheras (Minimum check)
+        if (ambientes > 0 && (!prop.ambientes || parseInt(prop.ambientes) < ambientes)) matches = false;
+        if (dormitorios > 0 && (!prop.dormitorios || parseInt(prop.dormitorios) < dormitorios)) matches = false;
+        if (banios > 0 && (!prop.banios || parseInt(prop.banios) < banios)) matches = false;
+        if (cocheras > 0 && (!prop.cocheras || parseInt(prop.cocheras) < cocheras)) matches = false;
+
+        // Superficie
+        // Logic: If filter is set, Property MUST have surface data and match range
+        if (prop.superficie) {
+            const propSupCub = parseFloat(prop.superficie.cubierta);
+            const propSupTot = parseFloat(prop.superficie.total);
+
+            // Covered
+            if (supCubDesde > 0 || supCubHasta !== Infinity) {
+                if(isNaN(propSupCub)) matches = false;
+                else {
+                    if (propSupCub < supCubDesde) matches = false;
+                    if (propSupCub > supCubHasta) matches = false;
+                }
+            }
+
+            // Total
+            if (supTotDesde > 0 || supTotHasta !== Infinity) {
+                if(isNaN(propSupTot)) matches = false;
+                else {
+                    if (propSupTot < supTotDesde) matches = false;
+                    if (propSupTot > supTotHasta) matches = false;
+                }
+            }
+
+        } else {
+            // Prop has no surface object. If filters active, exclude.
+            if (supCubDesde > 0 || supCubHasta !== Infinity || supTotDesde > 0 || supTotHasta !== Infinity) matches = false;
+        }
+
+        // Checkboxes Logic
+        // We handle missing 'caracteristicas' or missing keys by assuming false if filter is checked
+        if (prop.caracteristicas) {
+            if (aptoMascota && !prop.caracteristicas.mascotas) matches = false; // Key might be mascotas
+            if (aptoProfesional && !prop.caracteristicas.profesional) matches = false;
+            if (usoComercial && !prop.caracteristicas.comercial) matches = false;
+            if (aptoCredito && !prop.caracteristicas.credito) matches = false;
+
+            if (agua && !prop.caracteristicas.agua) matches = false;
+            if (luz && !prop.caracteristicas.luz) matches = false;
+            if (gas && !prop.caracteristicas.gas) matches = false;
+            if (cloacas && !prop.caracteristicas.cloacas) matches = false;
+            if (internet && !prop.caracteristicas.internet) matches = false;
+            if (pavimento && !prop.caracteristicas.pavimento) matches = false;
+
+            if (pileta && !prop.caracteristicas.pileta) matches = false;
+            if (parrilla && !prop.caracteristicas.parrilla) matches = false;
+            if (quincho && !prop.caracteristicas.quincho) matches = false;
+            if (sum && !prop.caracteristicas.sum) matches = false;
+            if (seguridad && !prop.caracteristicas.seguridad) matches = false;
+            
+            // Special Case: Cochera Checkbox. 
+            // Checks if property has "cochera" characteristic OR has numeric cocheras > 0
+            if (checkCochera) {
+                const hasCocheraFeat = !!prop.caracteristicas.cochera;
+                const hasCocheraNum = prop.cocheras && parseInt(prop.cocheras) > 0;
+                if (!hasCocheraFeat && !hasCocheraNum) matches = false; 
+            }
+
+        } else {
+            // If checking for a characteristic but prop has none, exclude
+            if (aptoMascota || aptoProfesional || usoComercial || aptoCredito || 
+                agua || luz || gas || cloacas || internet || pavimento ||
+                pileta || parrilla || quincho || sum || seguridad || checkCochera) {
+                matches = false;
+            }
         }
 
         return matches;
     });
 
     renderProperties(filtered);
+    
+    // Auto collapse advanced filters
+    const filters = document.getElementById('advanced-filters');
+    const toggleBtn = document.querySelector('.advanced-toggle span');
+    if (filters && filters.style.display !== 'none') {
+        filters.style.display = 'none';
+        if (toggleBtn) {
+            toggleBtn.innerHTML = 'Búsqueda Avanzada / Más Filtros <i class="fas fa-chevron-down"></i>';
+        }
+    }
+
+    // Auto Scroll to results if coming from button
+    const container = document.getElementById('properties-container');
+    if(container) {
+        // Only scroll if we are not already viewing it (simple check)
+        const rect = container.getBoundingClientRect();
+        if(rect.top < 0 || rect.top > window.innerHeight) {
+             container.scrollIntoView({ behavior: 'smooth' });
+        }
+    }
 }
 
 function capitalize(str) {
