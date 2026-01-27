@@ -75,6 +75,32 @@
                 <h3>Información Básica</h3>
                 <div class="grid-2">
                     <div class="form-group">
+                        <label>Código Único (Opcional)</label>
+                        <input type="text" id="codigo" placeholder="Ej: REF-001">
+                    </div>
+                   <div class="form-group">
+                        <label>Condición</label>
+                        <select id="condicion">
+                            <option value="">Seleccionar...</option>
+                            <option value="Excelente">Excelente</option>
+                            <option value="Muy buena">Muy buena</option>
+                            <option value="Buenas">Buenas</option>
+                            <option value="Regular">Regular</option>
+                            <option value="Reciclado">Reciclado</option>
+                            <option value="En obra">En obra</option>
+                            <option value="A Refaccionar">A Refaccionar</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Situación</label>
+                        <select id="situacion">
+                            <option value="">Seleccionar...</option>
+                            <option value="Habitada">Habitada</option>
+                            <option value="Desocupada">Desocupada</option>
+                            <option value="Alquilada">Alquilada</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
                         <label>Título de la Publicación</label>
                         <input type="text" id="titulo" required placeholder="Ej: Casa en Barrio Privado">
                     </div>
@@ -98,6 +124,9 @@
                             <option value="oficina">Oficina</option>
                             <option value="galpon">Galpón</option>
                             <option value="finca">Finca</option>
+                            <option value="bodega">Bodega</option>
+                            <option value="campo">Campo</option>
+                            <option value="fondo_comercio">Fondo de Comercio</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -139,6 +168,20 @@
                     <label>Dirección exacta</label>
                     <input type="text" id="ubicacion" required placeholder="Ej: Las Cañas 345">
                 </div>
+                <div class="form-group">
+                    <label>Orientación</label>
+                    <select id="orientacion">
+                        <option value="">Seleccionar...</option>
+                        <option value="Norte">Norte</option>
+                        <option value="Sur">Sur</option>
+                        <option value="Este">Este</option>
+                        <option value="Oeste">Oeste</option>
+                        <option value="Noreste">Noreste</option>
+                        <option value="Noroeste">Noroeste</option>
+                        <option value="Sureste">Sureste</option>
+                        <option value="Suroeste">Suroeste</option>
+                    </select>
+                </div>
                 <div class="grid-2">
                     <div class="form-group">
                         <label>Latitud (Ej: -32.890)</label>
@@ -164,6 +207,14 @@
                         <input type="number" id="supCubierta">
                     </div>
                     <div class="form-group">
+                        <label>Frente (m)</label>
+                        <input type="text" id="frente">
+                    </div>
+                    <div class="form-group">
+                        <label>Fondo (m)</label>
+                        <input type="text" id="fondo">
+                    </div>
+                    <div class="form-group">
                         <label>Ambientes</label>
                         <input type="number" id="ambientes">
                     </div>
@@ -183,6 +234,10 @@
                         <label>Antigüedad (años)</label>
                         <input type="number" id="antiguedad">
                     </div>
+                    <div class="form-group">
+                        <label>Plantas</label>
+                        <input type="number" id="plantas">
+                    </div>
                 </div>
             </div>
 
@@ -196,12 +251,20 @@
                     <label><input type="checkbox" id="cloacas"> Cloacas</label>
                     <label><input type="checkbox" id="internet"> Internet / Wifi</label>
                     <label><input type="checkbox" id="pavimento"> Pavimento</label>
+                    
+                    <!-- Nuevos Agregados -->
+                    <label><input type="checkbox" id="plazas"> Plazas Cercanas</label>
+                    <label><input type="checkbox" id="culturales"> Espacios Culturales</label>
+                    <label><input type="checkbox" id="universidad"> Universidad Cercana</label>
+                    <label><input type="checkbox" id="secundaria"> Escuela Secundaria</label>
+                    <label><input type="checkbox" id="primaria"> Escuela Primaria</label>
                     <label><input type="checkbox" id="pileta"> Pileta</label>
                     <label><input type="checkbox" id="parrilla"> Parrilla / Quincho</label>
                     <label><input type="checkbox" id="jardin"> Jardín</label>
                     <label><input type="checkbox" id="seguridad"> Seguridad / Alarma</label>
                     <label><input type="checkbox" id="mascotas"> Apto Mascotas</label>
                     <label><input type="checkbox" id="profesional"> Apto Profesional</label>
+                    <label><input type="checkbox" id="credito"> Apto Crédito</label>
                     <label><input type="checkbox" id="escritura"> Escritura Inmediata</label>
                     <label><input type="checkbox" id="planos"> Planos Aprobados</label>
                 </div>

@@ -121,8 +121,21 @@ function renderProperties(propertiesToRender) {
         // Currency Logic
         const priceDisplay = prop.moneda ? `${prop.moneda} ${prop.precio}` : prop.precio;
 
+        // Badge Logic
+        let badgeHtml = '';
+        if (prop.estado && prop.estado !== 'disponible') {
+            let badgeColor = '#28a745'; // Default (shouldnt happen if not available)
+            if (prop.estado === 'reservado') badgeColor = '#e67e22';
+            if (prop.estado === 'vendido') badgeColor = '#dc3545';
+            
+            badgeHtml = `<span style="position: absolute; top: 10px; right: 10px; background: ${badgeColor}; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; text-transform: uppercase; z-index: 5; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+                ${prop.estado}
+            </span>`;
+        }
+
         card.innerHTML = `
-            <div class="card-image">
+            <div class="card-image" style="position: relative;">
+                ${badgeHtml}
                 <img src="${prop.imagenes.principal}" alt="${prop.titulo}" onerror="this.src='https://via.placeholder.com/800x600?text=No+Image'">
                 <span class="tag ${tagClass}">${capitalize(prop.tipo)} en ${capitalize(prop.operacion)}</span>
             </div>
