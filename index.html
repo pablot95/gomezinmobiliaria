@@ -107,10 +107,16 @@
                         </div>
                         <button type="button" class="btn-search" onclick="filterProperties()">BUSCAR</button>
                     </div>
-
-                    <!-- Toggle Avanzado -->
-                    <div class="advanced-toggle" onclick="toggleAdvancedSearch()">
-                        <span>Búsqueda Avanzada / Más Filtros <i class="fas fa-chevron-down"></i></span>
+                    
+                    <!-- Fila con Toggle Avanzado y Botón Agrimensura -->
+                    <div class="search-bottom-row" style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px; gap: 140px;">
+                        <!-- Toggle Avanzado -->
+                        <div class="advanced-toggle" onclick="toggleAdvancedSearch()" style="margin: 0;">
+                            <span>Búsqueda Avanzada / Más Filtros <i class="fas fa-chevron-down"></i></span>
+                        </div>
+                        
+                        <!-- Botón Agrimensura -->
+                        <a href="#agrimensura" class="btn-search solicitar" style="font-size: 0.85rem !important; padding: 8px 16px !important; text-decoration: none;">Solicitar plano de agrimensura</a>
                     </div>
 
                     <!-- Panel Avanzado (Oculto por defecto) -->
@@ -129,7 +135,6 @@
                                 <input type="number" placeholder="Hasta" name="precio_hasta">
                                 <label class="check-label"><input type="checkbox" name="incluye_expensas"> Incluye Expensas</label>
                                 <input type="number" placeholder="Valor Expensas" name="valor_expensas">
-                                <label class="check-label hl-check"><input type="checkbox" name="solicitar_agrimensura"> Solicitar Plano Agrimensura</label>
                             </div>
                         </div>
 
