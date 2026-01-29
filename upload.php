@@ -11,6 +11,23 @@ if (!file_exists($target_dir)) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_FILES['image'])) {
         $file = $_FILES['image'];
+
+        // Chequear errores de subida
+        if ($file['error'] !== UPLOAD_ERR_OK) {
+            $uploadErrors = [
+                UPLOAD_ERR_INI_SIZE => 'El archivo excede el tamaño máximo permitido por el servidor.',
+                UPLOAD_ERR_FORM_SIZE => 'El archivo es demasiado grande.',
+                UPLOAD_ERR_PARTIAL => 'La subida fue interrumpida.',
+                UPLOAD_ERR_NO_FILE => 'No se seleccionó ningún archivo.',
+                UPLOAD_ERR_NO_TMP_DIR => 'Error de servidor: falta carpeta temporal.',
+                UPLOAD_ERR_CANT_WRITE => 'Error de servidor: fallo al escribir.',
+                UPLOAD_ERR_EXTENSION => 'Error de servidor: extensión PHP detuvo subida.'
+            ];
+            $msg = isset($uploadErrors[$file['error']]) ? $uploadErrors[$file['error']] : 'Error desconocido de subida.';
+            http_response_code(400);
+            echo json_encode(['error' => $msg]);
+            exit;
+        }
         
         // Allowed extensions
         $allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'mp4', 'webm', 'mov'];

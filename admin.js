@@ -99,6 +99,23 @@ window.updatePropStatus = async function(id, newStatus) {
 let isEditing = false;
 let editingId = null;
 let originalImages = { principal: null, galeria: [], video: null };
+let newGalleryFiles = []; // Cola de archivos nuevos para subir
+
+// Listener para acumular imágenes nuevas
+document.getElementById('imgGaleria').addEventListener('change', function(e) {
+    if(this.files && this.files.length > 0) {
+        Array.from(this.files).forEach(file => {
+            // Evitar duplicados exactos (opcional, pero útil)
+            // Chequeamos nombre y tamaño
+            const duplicate = newGalleryFiles.find(f => f.name === file.name && f.size === file.size);
+            if(!duplicate) {
+                newGalleryFiles.push(file);
+            }
+        });
+        renderGalleryPreview();
+        this.value = ''; // Limpiar input para permitir seleccionar lo mismo u otro lote
+    }
+});
 
 window.editProperty = async function(id) {
     try {
@@ -154,6 +171,18 @@ window.editProperty = async function(id) {
         originalImages.galeria = data.imagenes?.galeria || [];
         originalImages.video = data.video || null;
 
+        // Render Previews
+        const mainPreview = document.getElementById('previewPrincipal');
+        if (mainPreview) {
+            if (originalImages.principal) {
+                mainPreview.style.display = 'block';
+                mainPreview.innerHTML = `<img src="${originalImages.principal}" style="max-height: 150px; border: 1px solid #ccc; padding: 5px; border-radius: 4px;">`;
+            } else {
+                mainPreview.style.display = 'none';
+            }
+        }
+        renderGalleryPreview();
+
         // UI Mode
         isEditing = true;
         editingId = id;
@@ -186,14 +215,85 @@ window.cancelEdit = function() {
     isEditing = false;
     editingId = null;
     originalImages = { principal: null, galeria: [], video: null };
+    newGalleryFiles = []; // Resetear cola de nuevos archivos
     
+    // Clear Previews
+    const mainPreview = document.getElementById('previewPrincipal');
+    if(mainPreview) {
+        mainPreview.innerHTML = '';
+        mainPreview.style.display = 'none';
+    }
+    const galPreview = document.getElementById('previewGaleria');
+    if(galPreview) galPreview.innerHTML = '';
+
     document.getElementById('propertyForm').reset();
     document.querySelector('.btn-submit').textContent = 'GUARDAR PROPIEDAD';
     document.getElementById('imgPrincipal').setAttribute('required', 'true');
     
     const cancelBtn = document.getElementById('btn-cancel-edit');
     if(cancelBtn) cancelBtn.style.display = 'none';
+
+    restoreDraft(); // Restaurar el borrador pendiente si lo hubiera
 }
+
+// Helper: Render Gallery Previews
+function renderGalleryPreview() {
+    const container = document.getElementById('previewGaleria');
+    if (!container) return;
+    container.innerHTML = '';
+    // 1. Renderizar imágenes ya existentes (del servidor)
+    if (originalImages.galeria && originalImages.galeria.length > 0) {
+        originalImages.galeria.forEach((url, index) => {
+            const div = document.createElement('div');
+            div.style.position = 'relative';
+            div.style.width = '100px';
+            div.style.height = '120px'; // Un poco mas alto para texto
+            div.className = 'gallery-preview-item';
+
+            div.innerHTML = `
+                <img src="${url}" style="width:100px; height:100px; object-fit:cover; border:2px solid #2ecc71; border-radius: 4px;">
+                <span style="display:block; font-size:10px; text-align:center; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; color:#27ae60; font-weight:bold;">Guardada</span>
+                <button type="button" onclick="removeGalleryImage(${index})" style="position:absolute; top:-5px; right:-5px; background:red; color:white; border:none; width:20px; height:20px; border-radius:50%; cursor:pointer; font-weight:bold; display:flex; align-items:center; justify-content:center;" title="Eliminar">&times;</button>
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    // 2. Renderizar nuevas imágenes pendientes de subida
+    if (newGalleryFiles.length > 0) {
+        newGalleryFiles.forEach((file, index) => {
+            const tempUrl = URL.createObjectURL(file);
+            const ext = file.name.split('.').pop().toUpperCase();
+            
+            const div = document.createElement('div');
+            div.style.position = 'relative';
+            div.style.width = '100px';
+            div.style.height = '120px';
+            div.className = 'gallery-preview-item';
+
+            div.innerHTML = `
+                <img src="${tempUrl}" style="width:100px; height:100px; object-fit:cover; border:2px solid #3498db; border-radius: 4px;">
+                <span style="display:block; font-size:10px; text-align:center; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; color: #34495e;">${ext}</span>
+                <button type="button" onclick="removeNewFile(${index})" style="position:absolute; top:-5px; right:-5px; background:#e74c3c; color:white; border:none; width:20px; height:20px; border-radius:50%; cursor:pointer; font-weight:bold; display:flex; align-items:center; justify-content:center;" title="Quitar de la lista">&times;</button>
+            `;
+            container.appendChild(div);
+        });
+    }
+}
+
+window.removeGalleryImage = function(index) {
+    if (confirm('¿Eliminar esta imagen guardada de la galería?')) {
+        originalImages.galeria.splice(index, 1);
+        renderGalleryPreview();
+    }
+}
+
+window.removeNewFile = function(index) {
+    // No necesitamos confirmación estricta para borrar algo que aun no se sube, es mas ágil
+    newGalleryFiles.splice(index, 1);
+    renderGalleryPreview();
+}
+
 
 async function uploadImage(file) {
     const formData = new FormData();
@@ -206,13 +306,24 @@ async function uploadImage(file) {
             body: formData
         });
 
-        if (!response.ok) {
-            throw new Error(`HTTP Error: ${response.status}`);
+        let data;
+        const responseText = await response.text();
+        
+        try {
+            data = JSON.parse(responseText);
+        } catch (e) {
+            // Si el servidor devuelve error HTML en vez de JSON
+            if (!response.ok) {
+                throw new Error(`Server Error (${response.status}): Respuesta no válida del servidor.`);
+            }
         }
 
-        const data = await response.json();
+        if (!response.ok) {
+            const errorMsg = (data && data.error) ? data.error : `HTTP Error: ${response.status}`;
+            throw new Error(errorMsg);
+        }
         
-        if (data.error) {
+        if (data && data.error) {
             throw new Error(data.error);
         }
 
@@ -234,7 +345,6 @@ propertyForm.addEventListener('submit', async (e) => {
     try {
         // 1. Upload Images
         const mainImageFile = document.getElementById('imgPrincipal').files[0];
-        const galleryFiles = document.getElementById('imgGaleria').files;
         const videoFile = document.getElementById('videoFile').files[0];
         
         // Main Image Logic
@@ -251,21 +361,18 @@ propertyForm.addEventListener('submit', async (e) => {
 
         // Gallery Logic
         let galleryUrls = [];
-        if (galleryFiles.length > 0) {
-            const uploadPromises = Array.from(galleryFiles).map(file => uploadImage(file));
-            galleryUrls = await Promise.all(uploadPromises);
-            
-            // If editing, we might want to Append or Replace? 
-            // For simplicity, if new files are selected, we ADD them to existing ones?
-            // OR we replace completely? Usually users expect specific control.
-            // Let's APPEND for now if editing, unless user cleared them? No way to clear in file input.
-            // Let's just Replace logic -> If files selected, use new files. 
-            // WAIT, if specific logic needed: "If you select files, they replace old ones" is safer for "modifying"
-            // But if I want to add... 
-            // Let's decide: If new files uploaded, they become the gallery. If no files, keep old.
-        } else {
-            if(isEditing) galleryUrls = originalImages.galeria;
+        // If editing, start with the surviving original images
+        if(isEditing && originalImages.galeria) {
+            galleryUrls = [...originalImages.galeria];
         }
+
+        // Usamos newGalleryFiles en lugar de leer el input directamente
+        if (newGalleryFiles.length > 0) {
+            const uploadPromises = newGalleryFiles.map(file => uploadImage(file));
+            const newUrls = await Promise.all(uploadPromises);
+            // Append new images to existing ones
+            galleryUrls = [...galleryUrls, ...newUrls];
+        } 
 
         // Video Logic
         let videoUrl = null;
@@ -349,6 +456,7 @@ propertyForm.addEventListener('submit', async (e) => {
             const docRef = await addDoc(collection(db, "propiedades"), propertyData);
             console.log("Document written with ID: ", docRef.id);
             showMessage("Propiedad guardada con éxito!", "success");
+            clearDraft(); // Limpiar borrador al guardar exitosamente
         } else {
             // Update
             const propRef = doc(db, "propiedades", editingId);
@@ -358,7 +466,10 @@ propertyForm.addEventListener('submit', async (e) => {
             window.cancelEdit(); // Reset mode
         }
         
+        // Limpiamos todo al terminar correctamente
         propertyForm.reset();
+        newGalleryFiles = []; // Important: clear pending files
+        renderGalleryPreview(); // Clear preview UI
         loadProperties(); // Refresh list
 
     } catch (e) {
@@ -379,3 +490,64 @@ function showMessage(text, type) {
         messageDiv.style.display = 'none';
     }, 5000);
 }
+
+// --- AUTO-SAVE DRAFT FEATURE ---
+
+function saveDraft() {
+    if (isEditing) return; // No sobrescribir borrador de nueva propiedad mientras se edita una existente
+
+    const formData = {};
+    const elements = propertyForm.elements;
+
+    for (let i = 0; i < elements.length; i++) {
+        const el = elements[i];
+        if (el.id) { // Usamos ID como clave principal
+            const key = el.id;
+            if (el.type === 'checkbox') {
+                formData[key] = el.checked;
+            } else if (el.type !== 'file' && el.type !== 'submit' && el.type !== 'button') {
+                formData[key] = el.value;
+            }
+        }
+    }
+    localStorage.setItem('propertyDraft', JSON.stringify(formData));
+}
+
+function restoreDraft() {
+    const saved = localStorage.getItem('propertyDraft');
+    if (!saved) return;
+    
+    // Si estamos editando, no restaurar borrador encima
+    if (isEditing) return;
+
+    try {
+        const formData = JSON.parse(saved);
+        const elements = propertyForm.elements;
+
+        for (let i = 0; i < elements.length; i++) {
+            const el = elements[i];
+            const key = el.id;
+            if (key && formData.hasOwnProperty(key)) {
+                if (el.type === 'checkbox') {
+                    el.checked = formData[key];
+                } else if (el.type !== 'file') {
+                    el.value = formData[key];
+                }
+            }
+        }
+        // console.log('Borrador restaurado');
+    } catch (e) {
+        console.error('Error restaurando borrador', e);
+    }
+}
+
+function clearDraft() {
+    localStorage.removeItem('propertyDraft');
+}
+
+// Add listeners for auto-save
+propertyForm.addEventListener('input', saveDraft);
+propertyForm.addEventListener('change', saveDraft); // For selects and checkboxes
+
+// Restore on load
+document.addEventListener('DOMContentLoaded', restoreDraft);

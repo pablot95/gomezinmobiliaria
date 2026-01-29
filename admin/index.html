@@ -275,10 +275,12 @@
                 <div class="form-group">
                     <label>Imagen Principal (Portada)</label>
                     <input type="file" id="imgPrincipal" accept="image/*" required>
+                    <div id="previewPrincipal" style="margin-top: 10px; display: none;"></div>
                 </div>
                 <div class="form-group">
-                    <label>Galería de Fotos (Seleccionar múltiples)</label>
+                    <label>Galería de Fotos (Las nuevas se agregan a las existentes)</label>
                     <input type="file" id="imgGaleria" accept="image/*" multiple>
+                    <div id="previewGaleria" style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;"></div>
                 </div>
                 <div class="form-group">
                     <label>Video del Recorrido (Seleccionar archivo MP4 o WebM)</label>
