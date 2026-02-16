@@ -303,19 +303,24 @@ async function uploadImage(file) {
         // Point to the PHP script in the root directory relative to /admin/
         const response = await fetch('../upload.php', {
             method: 'POST',
-            body: formData
+            body: formData,
+            // No añadir headers Content-Type manualmente, fetch lo hace automáticamente con FormData
         });
 
         let data;
         const responseText = await response.text();
         
+        console.log('Server response:', responseText); // Debug
+        
         try {
             data = JSON.parse(responseText);
         } catch (e) {
             // Si el servidor devuelve error HTML en vez de JSON
+            console.error('Failed to parse JSON. Raw response:', responseText);
             if (!response.ok) {
-                throw new Error(`Server Error (${response.status}): Respuesta no válida del servidor.`);
+                throw new Error(`Error del servidor (${response.status}): No se pudo procesar la respuesta. Verifica que upload.php esté correctamente configurado.`);
             }
+            throw new Error('Respuesta inválida del servidor. Verifica la consola para más detalles.');
         }
 
         if (!response.ok) {
@@ -325,6 +330,10 @@ async function uploadImage(file) {
         
         if (data && data.error) {
             throw new Error(data.error);
+        }
+
+        if (!data || !data.url) {
+            throw new Error('La respuesta del servidor no contiene una URL válida.');
         }
 
         return data.url;
