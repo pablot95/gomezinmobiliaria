@@ -40,17 +40,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         
         // Allowed extensions
-        $allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'mp4', 'webm', 'mov'];
+        $allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'mp4', 'webm', 'mov', 'avi'];
         $extension = strtolower(pathinfo($file["name"], PATHINFO_EXTENSION));
 
         if (!in_array($extension, $allowed)) {
             http_response_code(400);
-            echo json_encode(['error' => 'Tipo de archivo no permitido.']);
+            echo json_encode(['error' => 'Tipo de archivo no permitido. Formatos válidos: ' . implode(', ', $allowed)]);
+            exit;
+        }
+        
+        // Verificar tamaño del archivo (150MB máximo)
+        $maxSize = 150 * 1024 * 1024; // 150MB en bytes
+        if ($file['size'] > $maxSize) {
+            $sizeMB = round($file['size'] / (1024 * 1024), 2);
+            http_response_code(400);
+            echo json_encode(['error' => "El archivo es demasiado grande ({$sizeMB}MB). Máximo permitido: 150MB."]);
             exit;
         }
 
         // Basic check for images only (skip for videos)
-        $videoExtensions = ['mp4', 'webm', 'mov'];
+        $videoExtensions = ['mp4', 'webm', 'mov', 'avi'];
         if (!in_array($extension, $videoExtensions)) {
             $check = getimagesize($file["tmp_name"]);
             if($check === false) {
@@ -58,6 +67,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 echo json_encode(['error' => 'El archivo no es una imagen válida.']);
                 exit;
             }
+        } else {
+            // Log video upload attempt for debugging
+            error_log("Uploading video: {$file['name']} - Size: " . round($file['size'] / (1024 * 1024), 2) . "MB");
         }
 
         // Generar nombre único

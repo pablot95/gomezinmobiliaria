@@ -1,6 +1,13 @@
 # Habilitar PHP
 AddHandler application/x-httpd-php .php
 
+# Aumentar límites de subida para videos (150MB)
+php_value upload_max_filesize 150M
+php_value post_max_size 150M
+php_value max_execution_time 300
+php_value max_input_time 300
+php_value memory_limit 256M
+
 # Permitir todos los métodos HTTP necesarios
 <FilesMatch "upload\.php$">
     <LimitExcept GET POST OPTIONS>

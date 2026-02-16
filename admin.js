@@ -386,6 +386,8 @@ propertyForm.addEventListener('submit', async (e) => {
         // Video Logic
         let videoUrl = null;
         if (videoFile) {
+            submitBtn.textContent = 'Subiendo video (esto puede tardar)...';
+            console.log(`Uploading video: ${videoFile.name} - Size: ${(videoFile.size / (1024 * 1024)).toFixed(2)}MB`);
             videoUrl = await uploadImage(videoFile);
         } else {
             if(isEditing) videoUrl = originalImages.video;
