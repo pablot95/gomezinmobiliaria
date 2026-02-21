@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Optimization -->
+    <title>Gomez & Asociados Real Estate | Property Sales and Rentals in Mendoza</title>
+    <meta name="description" content="Find your ideal home in Mendoza with Gomez & Asociados Real Estate. Houses for sale, apartment rentals, property purchases, land, surveying and appraisals. Professional advice.">
+    <meta name="keywords" content="real estate, real estate mendoza, house for sale, house for sale mendoza, rental, property purchase, apartments in mendoza, land mendoza, surveying mendoza, appraisals">
+    <meta name="author" content="Gomez & Asociados">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#1a1a1a">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://gomezasociados.com/en/">
+    <meta property="og:title" content="Gomez & Asociados Real Estate | Properties in Mendoza">
+    <meta property="og:description" content="Experts in buying, selling and renting properties in Mendoza. Professional surveying and appraisal services. Find your next investment here.">
+    <meta property="og:image" content="../images/logo.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:title" content="Gomez & Asociados Real Estate | Properties in Mendoza">
+    <meta property="twitter:description" content="Find your ideal home in Mendoza. Sales, rentals and appraisals with Gomez & Asociados.">
+    <meta property="twitter:image" content="../images/logo.png">
+
+    <!-- Schema.org Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "RealEstateAgent",
+      "name": "Gomez & Asociados Real Estate",
+      "image": "../images/logo.png",
+      "@id": "https://gomezasociados.com",
+      "url": "https://gomezasociados.com",
+      "telephone": "+5492615116458",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Mendoza",
+        "addressRegion": "Mendoza",
+        "addressCountry": "AR"
+      },
+      "description": "Leading real estate agency in Mendoza specializing in buying, selling, renting and property surveying.",
+      "priceRange": "$$$",
+      "openingHoursSpecification": {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": [
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday"
+        ],
+        "opens": "09:00",
+        "closes": "18:00"
+      }
+    }
+    </script>
+    
+    <link rel="canonical" href="https://gomezasociados.com/en/">
+    <link rel="icon" type="image/png" href="../images/logo.png">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="main-header">
+        <div class="container">
+            <a href="#" class="logo-link">
+                <!-- Text Only -->
+                <h1 style="font-size: 1.5rem; color: var(--secondary-color); font-weight: 300; letter-spacing: 1px;">GOMEZ & ASOCIADOS REAL ESTATE</h1>
+            </a>
+            
+            <button class="mobile-menu-btn" onclick="toggleMenu()" aria-label="Open Menu">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <nav class="main-nav" id="main-nav">
+                <ul>
+                    <li><a href="#inicio" onclick="closeMenu()">Home</a></li>
+                    <li><a href="#propiedades" onclick="closeMenu()">Properties</a></li>
+                    <li><a href="#agrimensura" onclick="closeMenu()">Surveying</a></li>
+                    <li><a href="#experiencia" onclick="closeMenu()">About Us</a></li>
+                    <li><a href="#contacto" onclick="closeMenu()">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="inicio" class="hero-section">
+        <div class="carousel">
+            <!-- New generic images for the example -->
+            <div class="carousel-track">
+                <div class="slide active" style="background-image: url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');"></div>
+                <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');"></div>
+                <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');"></div>
+            </div>
+        </div>
+
+        <div class="hero-overlay">
+            <div class="search-container">
+                <!-- Main Logo -->
+                <img src="../images/logo.png" alt="Gomez & Asociados Real Estate Mendoza - Logo" class="hero-logo">
+                
+                <h2>Property Sales and Rentals in Mendoza</h2>
+                <p style="color: white; margin-bottom: 20px;">BUYING – SELLING – APPRAISALS – MANAGEMENT - SURVEY PLANS – SUBDIVISIONS</p>
+                <form class="search-form" id="advanced-search-form">
+                    <!-- Main Row (Always visible) -->
+                    <div class="search-main-row">
+                        <div class="form-group">
+                            <select name="operacion" id="operacion">
+                                <option value="" disabled selected>Operation</option>
+                                <option value="venta">Sale</option>
+                                <option value="alquiler">Rental</option>
+                                <option value="temporario">Temporary Rental</option>
+                                <option value="emprendimiento">Development</option>
+                                <option value="permuta">Exchange</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <select name="tipo" id="tipo">
+                                <option value="" disabled selected>Property Type</option>
+                                <option value="departamento">Apartment</option>
+                                <option value="casa">House</option>
+                                <option value="chalet">Chalet</option>
+                                <option value="local">Commercial Space</option>
+                                <option value="quinta">Vacation Estate</option>
+                                <option value="consultorio">Office/Clinic</option>
+                                <option value="ph">PH</option>
+                                <option value="oficina">Commercial Office</option>
+                                <option value="deposito">Warehouse</option>
+                                <option value="garage">Garage</option>
+                                <option value="bodega">Winery</option>
+                                <option value="galpon">Industrial Shed</option>
+                                <option value="edificio">Building</option>
+                                <option value="terreno">Land</option>
+                                <option value="hotel">Hotel</option>
+                                <option value="fondo">Business Goodwill</option>
+                                <option value="nautica">Boat Slip</option>
+                                <option value="campo">Ranch/Farm</option>
+                                <option value="quincho">BBQ Area</option>
+                                <option value="salon">Event Venue</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <select name="zona" id="zona">
+                                <option value="" selected>Location / Area</option>
+                                <option value="Ciudad de Mendoza">Ciudad de Mendoza</option>
+                                <option value="Godoy Cruz">Godoy Cruz</option>
+                                <option value="Guaymallén">Guaymallén</option>
+                                <option value="Luján de Cuyo">Luján de Cuyo</option>
+                                <option value="Maipú">Maipú</option>
+                                <option value="Tupungato">Tupungato</option>
+                                <option value="Tunuyán">Tunuyán</option>
+                                <option value="Gran Mendoza">Gran Mendoza</option>
+                                <option value="Las Heras">Las Heras</option>
+                            </select>
+                        </div>
+                        <button type="button" class="btn-search" onclick="filterProperties()">SEARCH</button>
+                    </div>
+                    
+                    <!-- Row with Advanced Toggle and Surveying Button -->
+                    <div class="search-bottom-row" style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px; gap: 140px;">
+                        <!-- Advanced Toggle -->
+                        <div class="advanced-toggle" onclick="toggleAdvancedSearch()" style="margin: 0;">
+                            <span>Advanced Search / More Filters <i class="fas fa-chevron-down"></i></span>
+                        </div>
+                        
+                        <!-- Surveying Button -->
+                        <a href="#agrimensura" class="btn-search solicitar" style="font-size: 0.85rem !important; padding: 8px 16px !important; text-decoration: none;">Request a survey plan</a>
+                    </div>
+
+                    <!-- Advanced Panel (Hidden by default) -->
+                    <div class="advanced-filters" id="advanced-filters" style="display: none;">
+                        
+                        <!-- Prices and Expenses -->
+                        <div class="filter-group-row">
+                            <h4>Price and Costs</h4>
+                            <div class="fg-inputs">
+                                <select name="moneda" class="tiny-select">
+                                    <option value="" selected>Currency</option>
+                                    <option value="USD">USD</option>
+                                    <option value="ARS">ARS</option>
+                                </select>
+                                <input type="number" placeholder="From" name="precio_desde">
+                                <input type="number" placeholder="To" name="precio_hasta">
+                                <label class="check-label"><input type="checkbox" name="incluye_expensas"> Includes HOA Fees</label>
+                                <input type="number" placeholder="HOA Fees Amount" name="valor_expensas">
+                            </div>
+                        </div>
+
+                        <!-- Rooms and Areas -->
+                        <div class="filter-group-row">
+                            <h4>Layout and Area</h4>
+                            <div class="fg-inputs grid-4">
+                                <input type="number" placeholder="Rooms" name="ambientes">
+                                <input type="number" placeholder="Bedrooms" name="dormitorios">
+                                <input type="number" placeholder="Bathrooms" name="banios">
+                                <input type="number" placeholder="Parking Spaces" name="cocheras">
+                            </div>
+                            <div class="fg-inputs mt-2">
+                                <span>Covered Area (m²):</span>
+                                <input type="number" placeholder="From" name="sup_cub_desde">
+                                <input type="number" placeholder="To" name="sup_cub_hasta">
+                            </div>
+                            <div class="fg-inputs mt-2">
+                                <span>Total Area (m²):</span>
+                                <input type="number" placeholder="From" name="sup_tot_desde">
+                                <input type="number" placeholder="To" name="sup_tot_hasta">
+                            </div>
+                        </div>
+
+                        <!-- Services and Features -->
+                        <div class="filter-group-cols">
+                            <div class="col-checks">
+                                <h4>General</h4>
+                                <label><input type="checkbox" name="mascota"> Pet Friendly</label>
+                                <label><input type="checkbox" name="profesional"> Suitable for Professionals</label>
+                                <label><input type="checkbox" name="comercial"> Commercial Use</label>
+                                <label><input type="checkbox" name="credito"> Loan Eligible</label>
+                            </div>
+                            <div class="col-checks">
+                                <h4>Utilities</h4>
+                                <label><input type="checkbox" name="agua"> Running Water</label>
+                                <label><input type="checkbox" name="luz"> Electricity</label>
+                                <label><input type="checkbox" name="gas"> Natural Gas</label>
+                                <label><input type="checkbox" name="cloacas"> Sewage System</label>
+                                <label><input type="checkbox" name="internet"> Internet/WiFi</label>
+                                <label><input type="checkbox" name="pavimento"> Paved Road</label>
+                            </div>
+                            <div class="col-checks">
+                                <h4>Amenities</h4>
+                                <label><input type="checkbox" name="pileta"> Swimming Pool</label>
+                                <label><input type="checkbox" name="parrilla"> BBQ Grill</label>
+                                <label><input type="checkbox" name="quincho"> BBQ Area</label>
+                                <label><input type="checkbox" name="sum"> Common Room</label>
+                                <label><input type="checkbox" name="seguridad"> Security</label>
+                                <label><input type="checkbox" name="check_cochera"> Parking</label>
+                            </div>
+                        </div>
+                        
+                        <!-- Apply Button -->
+                        <div style="width: 100%; display: flex; justify-content: center; margin-top: 20px; border-top: 1px solid #eee; padding-top: 20px;">
+                            <button type="button" class="btn-search" onclick="filterProperties()" style="width: 200px;">APPLY FILTERS</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Recent Properties -->
+    <section id="propiedades" class="recent-properties section-padding">
+        <div class="container">
+            <h2 class="section-title">Featured Opportunities</h2>
+            <div class="properties-grid" id="properties-container">
+                <p style="text-align: center; width: 100%; grid-column: 1 / -1; padding: 40px; font-size: 1.2rem; color: #666;">
+                    <i class="fas fa-circle-notch fa-spin"></i> Loading properties...
+                </p>
+            </div>
+            
+            <!-- Map Section -->
+            <div id="main-map" style="width: 100%; height: 500px; margin-top: 40px; z-index: 1;"></div>
+        </div>
+    </section>
+
+    <!-- Surveying Section -->
+    <section id="agrimensura" class="info-section">
+        <div class="container">
+            <h2 class="section-title">Surveying & Legal Services</h2>
+            <div class="agrimensura-content" style="display: flex; flex-wrap: wrap; gap: 40px; justify-content: center;">
+                
+                <div class="agrim-info" style="flex: 1; min-width: 300px; margin-top: 5%;">
+                    <h3>Professional Services</h3>
+                    <ul style="list-style: none; margin-top: 20px;">
+                        <li style="margin-bottom: 10px;"><i class="fas fa-check" style="color: var(--secondary-color); margin-right: 10px;"></i> Parcel Status Reports</li>
+                        <li style="margin-bottom: 10px;"><i class="fas fa-check" style="color: var(--secondary-color); margin-right: 10px;"></i> Surveys and Subdivisions</li>
+                        <li style="margin-bottom: 10px;"><i class="fas fa-check" style="color: var(--secondary-color); margin-right: 10px;"></i> Boundary Marking</li>
+                        <li style="margin-bottom: 10px;"><i class="fas fa-check" style="color: var(--secondary-color); margin-right: 10px;"></i> Title Verification</li>
+                        <li style="margin-bottom: 10px;"><i class="fas fa-check" style="color: var(--secondary-color); margin-right: 10px;"></i> Topography and Engineering</li>
+                    </ul>
+                    <p style="margin-top: 20px;">
+                        Our team of licensed surveyors ensures the legal security of your property. 
+                        Before carrying out any real estate transaction, we make sure that the boundaries and documentation are in order.
+                    </p>
+                </div>
+
+                <div class="agrim-form-box" style="flex: 1; min-width: 300px; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-top: 5px solid var(--secondary-color);">
+                    <h3 style="margin-bottom: 20px; color: var(--primary-color);">Request Parcel Report</h3>
+                    <p style="font-size: 0.9rem; margin-bottom: 20px;">Enter the parcel number and your details. You will receive the information via WhatsApp.</p>
+                    
+                    <form id="padronForm" onsubmit="sendPadronToWhatsapp(event)">
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <label for="padron_numero" style="display: block; margin-bottom: 5px; font-weight: bold;">Parcel Number</label>
+                            <input type="text" id="padron_numero" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;" placeholder="E.g.: 12345/6">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <label for="padron_nombre" style="display: block; margin-bottom: 5px; font-weight: bold;">Full Name</label>
+                            <input type="text" id="padron_nombre" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;" placeholder="Your full name">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <label for="padron_telefono" style="display: block; margin-bottom: 5px; font-weight: bold;">Your Phone (optional)</label>
+                            <input type="tel" id="padron_telefono" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;" placeholder="For contact">
+                        </div>
+                        <button type="submit" style="width: 100%; background-color: #25D366; color: white; padding: 12px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                            <i class="fab fa-whatsapp" style="font-size: 1.2rem;"></i> Request Info
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Info Sections Wrapper -->
+    <div class="info-sections-wrapper">
+        
+        <!-- 1. About Us -->
+        <section id="experiencia" class="info-section light-bg">
+            <div class="container">
+                <h2 class="section-title">About Us</h2>
+                <div style="display: flex; flex-wrap: wrap; gap: 40px; align-items: center; justify-content: center;">
+                    <div style="flex: 1; min-width: 300px; max-width: 500px;">
+                        <img src="../images/nosotros.jpeg" alt="About Us" style="height: 600px; width: 100%; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                    </div>
+                    <div style="flex: 1; min-width: 300px; max-width: 600px; text-align: left;">
+                        <h3 style="color: var(--primary-color); margin-bottom: 20px; font-size: 1.5rem;">Experience and Professionalism</h3>
+                        <p style="font-size: 1.1rem; line-height: 1.8; margin-bottom: 20px;">
+                            With over 20 years in the real estate industry, at <strong>GOMEZ & ASOCIADOS</strong> we are dedicated to providing trust and guarantee in every transaction.
+                        </p>
+                        <p style="font-size: 1.1rem; line-height: 1.8; margin-bottom: 30px;">
+                            We specialize in a comprehensive service that covers:
+                        </p>
+                        <ul style="list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                            <li><i class="fas fa-check" style="color: var(--secondary-color); margin-right: 10px;"></i> Property sales</li>
+                            <li><i class="fas fa-check" style="color: var(--secondary-color); margin-right: 10px;"></i> Property management</li>
+                            <li><i class="fas fa-check" style="color: var(--secondary-color); margin-right: 10px;"></i> Real Appraisals</li>
+                            <li><i class="fas fa-check" style="color: var(--secondary-color); margin-right: 10px;"></i> Surveying</li>
+                            <li><i class="fas fa-check" style="color: var(--secondary-color); margin-right: 10px;"></i> Subdivisions</li>
+                            <li><i class="fas fa-check" style="color: var(--secondary-color); margin-right: 10px;"></i> Business goodwill</li>
+                            <li><i class="fas fa-check" style="color: var(--secondary-color); margin-right: 10px;"></i> Condominiums</li>
+                            <li><i class="fas fa-check" style="color: var(--secondary-color); margin-right: 10px;"></i> Others</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Evaluation & Strategy -->
+        <section class="info-section">
+            <div class="container">
+                <h2 class="section-title">Evaluation & Strategy</h2>
+                <div class="grid-cards">
+                    <article class="strategy-card">
+                        <i class="fas fa-search-dollar"></i>
+                        <h3>Realistic Appraisal</h3>
+                        <p>We don't create false expectations. We analyze the current market, comparable properties in the area, and the technical potential of the property to define a competitive and achievable price.</p>
+                    </article>
+                    <article class="strategy-card">
+                        <i class="fas fa-bullseye"></i>
+                        <h3>Precise Positioning</h3>
+                        <p>We identify the exact buyer profile for your property (investor, family, developer) and direct our advertising resources specifically toward that segment.</p>
+                    </article>
+                    <article class="strategy-card">
+                        <i class="fas fa-hard-hat"></i>
+                        <h3>Development Vision</h3>
+                        <p>By having a surveying department, you are guaranteed legal security and technical precision over the land, which is key before buying, selling, building, or subdividing a plot.</p>
+                    </article>
+                    <article class="strategy-card">
+                        <i class="fas fa-hand-holding-usr"></i>
+                        <h3>Full Support</h3>
+                        <p>From the first visit to the signing of the deed, we manage all the administrative and technical documentation necessary for a secure transaction.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Management Protocol -->
+        <section class="info-section light-bg">
+            <div class="container">
+                <h2 class="section-title">Management Protocol</h2>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-number">01</div>
+                        <div class="timeline-content">
+                            <h3>Initial Assessment</h3>
+                            <p>Photographic survey, verification of legal and technical documentation, and comparative market study.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-number">02</div>
+                        <div class="timeline-content">
+                            <h3>Marketing Strategy</h3>
+                            <p>Launch on our own portal, corporate social media (@inmobiliariagomezyasoc) and leading portals with quality audiovisual material.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-number">03</div>
+                        <div class="timeline-content">
+                            <h3>Professional Screening</h3>
+                            <p>We qualify interested parties before visits. We request prior guarantees and financial profiles to optimize your time and security.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-number">04</div>
+                        <div class="timeline-content">
+                            <h3>Closing and Formalization</h3>
+                            <p>Drafting of the purchase agreement, coordination with notaries, and post-sale follow-up.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Contact Footer -->
+    <footer id="contacto" class="footer-contact">
+        <div class="container">
+            <h2 class="section-title" style="color: var(--secondary-color);">Contact Us</h2>
+            <div class="contact-info">
+                <p><strong>GOMEZ & ASOCIADOS</strong></p>
+                <p>REAL ESTATE & SURVEYING</p>
+                <br>
+                <div style="max-width: 800px; margin: 0 auto 20px auto;">
+                    <p style="margin-bottom: 25px;"><i class="fas fa-map-marker-alt"></i> Juan Díaz de Solíz N° 669, Las Cañas – Guaymallén</p>
+                    
+                    <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 30px;">
+                        <!-- Left Contact -->
+                        <div style="text-align: left; min-width: 280px; padding: 15px; border: 1px solid #333; border-radius: 8px;">
+                            <p><i class="fas fa-user-tie" style="color: var(--secondary-color); margin-right: 8px;"></i> <strong>Eduardo Alberto Gomez</strong></p>
+                            <p style="font-size: 0.85rem; margin-left: 24px; color: #aaa; margin-bottom: 5px;">Licensed Real Estate Broker<br>License: 871</p>
+                            <p style="margin-left: 24px;"><i class="fab fa-whatsapp" style="font-size: 1.1rem; margin-right: 5px; color: #25D366;"></i> <a href="https://wa.me/5492614676359" style="color: white;">2614676359</a></p>
+                            <p style="margin-left: 24px; font-size: 0.85rem; word-break: break-all; margin-top: 5px;"><i class="fas fa-envelope" style="color: var(--secondary-color); margin-right: 5px;"></i> gomezyasociados2009@gmail.com</p>
+                        </div>
+
+                        <!-- Right Contact -->
+                        <div style="text-align: left; min-width: 280px; padding: 15px; border: 1px solid #333; border-radius: 8px;">
+                            <p><i class="fas fa-user" style="color: var(--secondary-color); margin-right: 8px;"></i> <strong>Javier Baudracco</strong></p>
+                            <p style="font-size: 0.85rem; margin-left: 24px; color: #aaa; margin-bottom: 5px;">Surveyor<br>License: 1548</p>
+                            <p style="margin-left: 24px;"><i class="fab fa-whatsapp" style="font-size: 1.1rem; margin-right: 5px; color: #25D366;"></i> <a href="https://wa.me/5492615116458" style="color: white;">2615116458</a></p>
+                            <p style="margin-left: 24px; font-size: 0.85rem; word-break: break-all; margin-top: 5px;"><i class="fas fa-envelope" style="color: var(--secondary-color); margin-right: 5px;"></i> gomezyasociados2009@gmail.com</p>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+            <div class="social-links">
+                <a href="https://www.instagram.com/inmobiliariagomezyasoc" target="_blank"><i class="fab fa-instagram"></i></a>
+                <a href="https://www.facebook.com/share/18ADbrGcnV" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://www.tiktok.com/@inmobiliariagomezyasoc" target="_blank"><i class="fab fa-tiktok"></i></a>
+            </div>
+            <p style="margin-top: 40px; font-size: 0.8rem; color: #555;">&copy; 2026 Gomez & Asociados. All rights reserved.</p>
+            <p style="margin-top: 10px; font-size: 0.75rem; color: #555;">
+                Developed and Designed by: <a href="https://www.gokywebs.net" target="_blank" style="color: #777; text-decoration: none;">Gokywebs.net</a>
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script type="module" src="../script.js"></script>
+</body>
+</html>

@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Optimization -->
+    <title>Property Details | Gomez & Asociados Real Estate Mendoza</title>
+    <meta name="description" content="Discover the details of this exclusive property in Mendoza. Gomez & Asociados Real Estate offers you the best options in sales and rentals.">
+    <meta name="keywords" content="property mendoza, house for sale mendoza, apartment rental mendoza, property details, gomez real estate">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph (Generic, ideally updated with JS) -->
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Real Estate Opportunity in Mendoza | Gomez & Asociados">
+    <meta property="og:description" content="Discover this incredible property we have available for you. Contact us for more information.">
+    <meta property="og:image" content="../images/logo.png">
+    
+    <link rel="icon" type="image/png" href="../images/logo.png">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <style>
+        .detail-container { padding: 40px 20px; background: #fff; max-width: 1400px; margin: 0 auto; }
+        .property-header { 
+            border-bottom: 2px solid var(--secondary-color); 
+            margin-top: 0px;
+            margin-left: 0px;
+            margin-bottom: 40px;
+            max-width: 1400px;
+        }
+        .property-header h1 { font-size: 2.5rem; color: var(--primary-color); margin-bottom: 0px; }
+        .property-header .price-container { font-size: 1.8rem; color: var(--secondary-color); font-weight: bold; margin-top: 0px; }
+        .property-header .price-expensas { font-size: 1.2rem; color: #666; font-weight: normal; margin-left: 10px; }
+        
+        /* PROTECTION AGAINST GIANT IMAGES */
+        img { max-width: 100%; height: auto; display: block; }
+
+        /* Logo Fix Global */
+        .logo-link img { max-height: 60px !important; width: auto !important; display: block; border-radius: 0 !important; }
+        
+        .header-logo-img { max-height: 150px; width: auto; }
+        @media(max-width: 768px) {
+            .header-logo-img { display: none; } 
+            .property-header { display: block !important; }
+        }
+
+        /* Gallery Fixed Layout */
+        .gallery-grid { 
+            display: grid; 
+            grid-template-columns: 1.5fr minmax(0, 1fr); 
+            gap: 10px; 
+            height: 550px; 
+            margin-bottom: 10px; 
+            margin-top: 55px;
+            width: 100%;
+            max-width: 100%; /* Containment */
+            overflow: hidden; 
+        }
+        
+        .gallery-main-container { 
+            position: relative; 
+            width: 100%; 
+            height: 100%; 
+            min-height: 0;
+            min-width: 0;
+            overflow: hidden; 
+            cursor: pointer; 
+            border-radius: 4px; 
+        }
+        
+        .gallery-main { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            display: block;
+            background: #f0f0f0; 
+        }
+
+        .gallery-side { 
+            display: grid; 
+            grid-template-rows: repeat(2, minmax(0, 1fr)); 
+            gap: 10px; 
+            height: 100%; 
+            overflow: hidden; /* Prevent spill */
+        }
+
+        .gallery-thumb-container { 
+            position: relative; 
+            width: 100%; 
+            height: 100%; 
+            min-height: 0;
+            min-width: 0;
+            overflow: hidden; 
+            cursor: pointer; 
+            border-radius: 4px; 
+            background: #f8f8f8; 
+        }
+        
+        .gallery-thumb { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            display: block;
+            background: #eee; 
+            transition: opacity 0.3s; 
+        }
+        .gallery-thumb:hover { opacity: 0.8; }
+        
+        /* Mobile adjustment */
+        @media(max-width: 768px) {
+            .detail-container { padding: 0; }
+            .gallery-grid { 
+                display: flex; 
+                flex-direction: column; 
+                height: auto; 
+                margin-bottom: 20px;
+                margin-top: 80px;
+            }
+            .gallery-main-container { 
+                height: 50vh; 
+                width: 100%;
+                border-radius: 0;
+            }
+            .gallery-side { 
+                display: none; 
+            }
+            .property-header, .details-grid {
+                padding: 0 20px;
+            }
+        }
+
+        /* RESTORED STYLES */
+        .more-photos-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); color: white;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; font-weight: bold;
+        }
+
+        /* Lightbox */
+        .lightbox {
+            display: none; position: fixed; z-index: 10000; left: 0; top: 0;
+            width: 100%; height: 100%; overflow: hidden;
+            background-color: rgba(0,0,0,0.95);
+            flex-direction: column; justify-content: center; align-items: center;
+        }
+        .lightbox.active { display: flex; }
+        .lightbox-content {
+            max-width: 80vw; max-height: 80vh; 
+            object-fit: contain; 
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+        .lightbox-nav {
+            position: absolute; top: 50%; width: 100%;
+            display: flex; justify-content: space-between; transform: translateY(-50%);
+            padding: 0 20px; pointer-events: none;
+        }
+        .nav-btn {
+            background: rgba(255,255,255,0.2); color: white; border: none;
+            padding: 15px 20px; cursor: pointer; font-size: 2rem;
+            pointer-events: all; border-radius: 50%; transition: 0.3s;
+        }
+        .nav-btn:hover { background: rgba(255,255,255,0.5); }
+        .close-lightbox {
+            position: absolute; top: 20px; right: 30px;
+            color: white; font-size: 3rem; cursor: pointer;
+            z-index: 10000;
+        }
+
+        @keyframes zoomIn { from {transform: scale(0.9); opacity: 0;} to {transform: scale(1); opacity: 1;} }
+
+        .details-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 40px; }
+        .info-col h3 { border-left: 4px solid var(--secondary-color); padding-left: 10px; margin: 30px 0 15px 0; }
+        
+        .specs-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
+        .spec-item { display: flex; align-items: center; gap: 10px; font-size: 0.95rem; }
+        .spec-item i { color: var(--secondary-color); width: 20px; text-align: center; }
+
+        .amenities-list { display: flex; flex-wrap: wrap; gap: 10px; }
+        .tag-amenity { background: #f0f0f0; padding: 5px 15px; border-radius: 20px; font-size: 0.9rem; }
+        .tag-amenity i { color: var(--secondary-color); margin-right: 5px; }
+
+        .sidebar-card { background: #f9f9f9; padding: 20px; border-radius: 8px; border-top: 4px solid var(--secondary-color); position: sticky; top: 100px; }
+        .agent-info { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+        .agent-avatar { width: 60px; height: 60px; border-radius: 50%; background: #ccc; }
+        
+        .map-box { width: 100%; height: 300px; background: #eee; margin-top: 20px; display: flex; align-items: center; justify-content: center; }
+
+        @media(max-width: 768px) {
+            .details-grid { grid-template-columns: 1fr; padding: 0 20px; }
+            .gallery-thumb-container { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="container">
+            <a href="index.html" style="display: flex; align-items: center; gap: 10px; color: white; text-transform: uppercase; font-weight: bold; text-decoration: none;">
+                <i class="fas fa-arrow-left"></i> Home
+            </a>
+        </div>
+    </header>
+
+        <div class="gallery-grid">
+            <div class="gallery-main-container" onclick="openLightbox(0)">
+                <img src="" class="gallery-main" id="img-main" alt="Main">
+            </div>
+            <div class="gallery-side" id="gallery-thumbs">
+                <!-- Thumbs injected via JS -->
+            </div>
+        </div>
+
+    <div class="detail-container" id="detail-content">
+        <!-- Gallery -->
+
+                    <!-- Property Header -->
+        <div class="property-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <span id="prop-type-tag" style="background: var(--secondary-color); color: white; padding: 5px 10px; border-radius: 4px; font-size: 1.3rem; text-transform: uppercase;">...</span>
+                <h1 id="prop-title" style="margin-top: 0px;">Loading...</h1>
+                <p id="prop-location" style="font-size: 1.3rem; color: #666; margin-bottom: 5px;"><i class="fas fa-map-marker-alt"></i> ...</p>
+                
+                <div class="price-container">
+                    <span id="prop-price">...</span>
+                    <span id="prop-expensas" class="price-expensas"></span>
+                </div>
+            </div>
+            
+            <div class="property-logo-container" style="padding-left: 0px;">
+                <img src="../images/logo.png" alt="Gomez & Asociados Real Estate" class="header-logo-img">
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="details-grid">
+            <div class="info-col">
+                
+                <h3 style="border-bottom: 2px solid var(--secondary-color); padding-bottom: 5px; margin-bottom: 20px;">BASIC INFORMATION</h3>
+
+                <div id="prop-status-badge" style="display:none; margin-bottom: 15px;">
+                     <!-- Badge injected via JS --> 
+                </div>
+
+                <div style="margin-bottom: 10px; font-weight: bold; color: #555;">
+                    Code: <span id="prop-code" style="color: black;">...</span>
+                </div>
+
+                <div class="specs-grid-custom" id="info-basica-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 40px;">
+                    <!-- JS Injected -->
+                </div>
+
+                <h3 style="border-bottom: 2px solid var(--secondary-color); padding-bottom: 5px; margin-bottom: 20px;">AREAS AND MEASUREMENTS</h3>
+                <div class="specs-grid-custom" id="superficies-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 40px;">
+                    <!-- JS Injected -->
+                </div>
+
+                <h3 style="border-bottom: 2px solid var(--secondary-color); padding-bottom: 5px; margin-bottom: 20px;">DESCRIPTION</h3>
+                <p id="prop-description" style="white-space: pre-wrap; margin-bottom: 40px;">...</p>
+                
+                <div id="video-wrapper" style="display:none; margin-bottom: 40px;">
+                    <h3 style="border-bottom: 2px solid var(--secondary-color); padding-bottom: 5px; margin-bottom: 20px;">VIDEO TOUR</h3>
+                    <video id="prop-video" controls style="width:100%; max-height:500px; background:#000; border-radius: 8px;"></video>
+                </div>
+
+                <h3>Features and Utilities</h3>
+                <div class="amenities-list" id="amenities-container">
+                    <!-- Injected via JS -->
+                </div>
+
+                <h3>Location</h3>
+                <div class="map-box" id="detail-map" style="width: 100%; height: 350px;"></div>
+                <div id="prop-coords" style="font-size: 0.8rem; color: #777; margin-top: 5px;"></div>
+            </div>
+
+            <div class="sidebar">
+                <div class="sidebar-card">
+                    <h4>Contact Seller</h4>
+                    <div class="agent-info">
+                        <div>
+                            <strong>Eduardo Alberto Gomez</strong>
+                            <div style="font-size:0.8rem; color:#666;">Responsible Broker</div>
+                        </div>
+                    </div>
+                    <form onsubmit="contactAgent(event)">
+                        <input type="text" id="contact-name" placeholder="Name" style="width:100%; margin-bottom:10px; padding:8px;" required>
+                        <textarea id="contact-msg" placeholder="Message" rows="4" style="width:100%; margin-bottom:10px; padding:8px;" required></textarea>
+                    </form>
+                    <button onclick="contactWhatsapp()" style="width:100%; background: #25D366; color:white; border:none; padding:10px; margin-top:10px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:5px;">
+                        <i class="fab fa-whatsapp"></i> WhatsApp
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Similar Properties Section -->
+    <section id="similar-properties-section" style="display: none; background: #f9f9f9; padding: 40px 0; border-top: 1px solid #ddd;">
+        <div class="container" style="max-width: 1400px; margin: 0 auto; padding: 0 20px;">
+            <h2 class="section-title" style="margin-bottom: 30px;">Similar Properties</h2>
+            <div class="properties-grid" id="similar-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px;">
+                <!-- JS Injected -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Lightbox Modal -->
+    <div id="lightbox" class="lightbox">
+        <span class="close-lightbox" onclick="closeLightbox()">&times;</span>
+        <img class="lightbox-content" id="lightbox-img">
+        <div class="lightbox-nav">
+            <button class="nav-btn" onclick="changeSlide(-1)">&#10094;</button>
+            <button class="nav-btn" onclick="changeSlide(1)">&#10095;</button>
+        </div>
+    </div>
+
+    <footer class="footer-contact" style="background: #111; color: white; padding: 20px; text-align: center; margin-top: 40px;">
+        <div class="container">
+            <h2 class="section-title" style="color: var(--secondary-color);">Contact Us</h2>
+            <div class="contact-info">
+                <p><strong>GOMEZ & ASOCIADOS</strong></p>
+                <p>REAL ESTATE & SURVEYING</p>
+                <br>
+                <div style="max-width: 800px; margin: 0 auto 20px auto;">
+                    <p style="margin-bottom: 25px;"><i class="fas fa-map-marker-alt"></i> Juan Díaz de Solíz N° 669, Las Cañas – Guaymallén</p>
+                    
+                    <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 30px;">
+                        <!-- Left Contact -->
+                        <div style="text-align: left; min-width: 280px; padding: 15px; border: 1px solid #333; border-radius: 8px;">
+                            <p><i class="fas fa-user-tie" style="color: var(--secondary-color); margin-right: 8px;"></i> <strong>Eduardo Alberto Gomez</strong></p>
+                            <p style="font-size: 0.85rem; margin-left: 24px; color: #aaa; margin-bottom: 5px;">Licensed Real Estate Broker<br>License: 871</p>
+                            <p style="margin-left: 24px;"><i class="fas fa-phone-alt" style="font-size: 0.9rem; margin-right: 5px;"></i> <a href="tel:2614676359" style="color: white;">2614676359</a></p>
+                            <p style="margin-left: 24px; font-size: 0.85rem; word-break: break-all; margin-top: 5px;"><i class="fas fa-envelope" style="color: var(--secondary-color); margin-right: 5px;"></i> gomezyasociados2009@gmail.com</p>
+                        </div>
+
+                        <!-- Right Contact -->
+                        <div style="text-align: left; min-width: 280px; padding: 15px; border: 1px solid #333; border-radius: 8px;">
+                            <p><i class="fas fa-user" style="color: var(--secondary-color); margin-right: 8px;"></i> <strong>Javier Baudracco</strong></p>
+                            <p style="font-size: 0.85rem; margin-left: 24px; color: #aaa; margin-bottom: 5px;">Surveyor<br>License: 1548</p>
+                            <br> <!-- Spacer to align better if needed -->
+                             <p style="margin-left: 24px;"><i class="fab fa-whatsapp" style="font-size: 1.1rem; margin-right: 5px; color: #25D366;"></i> <a href="https://wa.me/5492615116458" style="color: white;">2615116458</a></p>
+                            <p style="margin-left: 24px; font-size: 0.85rem; word-break: break-all; margin-top: 5px;"><i class="fas fa-envelope" style="color: var(--secondary-color); margin-right: 5px;"></i> gomezyasociados2009@gmail.com</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <p><i class="fas fa-envelope"></i> gomezyasociados2009@gmail.com</p>
+            </div>
+            <div class="social-links" style="margin-top: 20px;">
+                <a href="https://www.instagram.com/inmobiliariagomezyasoc" target="_blank" style="color:white; margin:0 10px; font-size:1.5rem;"><i class="fab fa-instagram"></i></a>
+                <a href="https://www.facebook.com/share/18ADbrGcnV" target="_blank" style="color:white; margin:0 10px; font-size:1.5rem;"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://www.tiktok.com/@inmobiliariagomezyasoc" target="_blank" style="color:white; margin:0 10px; font-size:1.5rem;"><i class="fab fa-tiktok"></i></a>
+            </div>
+            <p style="margin-top: 40px; font-size: 0.8rem; color: #555;">&copy; 2026 Gomez & Asociados. All rights reserved.</p>
+            <p style="margin-top: 10px; font-size: 0.75rem; color: #555;">
+                Developed and Designed by: <a href="https://www.gokywebs.net" target="_blank" style="color: #777; text-decoration: none;">Gokywebs.net</a>
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getFirestore, doc, getDoc, collection, query, where, getDocs, limit } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import firebaseConfig from "../firebase-config.js";
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Global State for Gallery
+        window.allImages = []; 
+        window.currentSlideIndex = 0;
+
+        window.openLightbox = function(index) {
+            if(window.allImages.length === 0) return;
+            window.currentSlideIndex = index;
+            updateLightbox();
+            document.getElementById('lightbox').classList.add('active');
+        }
+
+        window.closeLightbox = function() {
+            document.getElementById('lightbox').classList.remove('active');
+        }
+
+        window.changeSlide = function(step) {
+            window.currentSlideIndex += step;
+            if (window.currentSlideIndex < 0) window.currentSlideIndex = window.allImages.length - 1;
+            if (window.currentSlideIndex >= window.allImages.length) window.currentSlideIndex = 0;
+            updateLightbox();
+        }
+
+        function updateLightbox() {
+            const imgUrl = window.allImages[window.currentSlideIndex];
+            document.getElementById('lightbox-img').src = imgUrl;
+        }
+
+        // --- Swipe Logic for Lightbox ---
+        let touchStartX = 0;
+        let touchEndX = 0;
+        const lightboxEl = document.getElementById('lightbox');
+
+        if (lightboxEl) {
+            lightboxEl.addEventListener('touchstart', e => {
+                touchStartX = e.changedTouches[0].screenX;
+            }, {passive: true});
+
+            lightboxEl.addEventListener('touchend', e => {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe();
+            }, {passive: true});
+        }
+
+        function handleSwipe() {
+            if (touchEndX < touchStartX - 50) {
+                // Swipe left -> Next
+                window.changeSlide(1);
+            }
+            if (touchEndX > touchStartX + 50) {
+                // Swipe right -> Previous
+                window.changeSlide(-1);
+            }
+        }
+        
+        // Close on escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === "Escape") {
+                window.closeLightbox();
+            }
+            if (event.key === "ArrowLeft") {
+               if(document.getElementById('lightbox').classList.contains('active')) window.changeSlide(-1);
+            }
+            if (event.key === "ArrowRight") {
+               if(document.getElementById('lightbox').classList.contains('active')) window.changeSlide(1);
+            }
+        });
+
+        // Global functions for contact buttons
+        window.currentPropTitle = "";
+
+        window.contactAgent = function(e) {
+            e.preventDefault();
+            const name = document.getElementById('contact-name').value;
+            const phone = document.getElementById('contact-phone').value;
+            const msg = document.getElementById('contact-msg').value;
+            
+            const text = `Hi, I'm viewing the property: ${window.currentPropTitle}. %0A${msg} %0A%0AMy details: ${name} (${phone})`;
+            window.open(`https://wa.me/5492614676359?text=${text}`, '_blank');
+        }
+
+        window.contactWhatsapp = function() {
+            const text = `Hi, I'm interested in the property: ${window.currentPropTitle}`;
+            window.open(`https://wa.me/5492614676359?text=${text}`, '_blank');
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+             const params = new URLSearchParams(window.location.search);
+             const id = params.get('id');
+
+             if (!id) {
+                 document.getElementById('detail-content').innerHTML = '<h2 style="text-align:center;">Property not specified</h2>';
+                 return;
+             }
+
+             try {
+                const docRef = doc(db, "propiedades", id);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    window.currentPropTitle = data.titulo;
+                    
+                    // Header
+                    document.getElementById('prop-title').textContent = data.titulo;
+                    
+                    // Price Format
+                    let priceDisplay = data.precio;
+                    if(data.moneda) {
+                        priceDisplay = `${data.moneda} ${priceDisplay}`;
+                    } else {
+                        // Fallback logic
+                        if(priceDisplay && !priceDisplay.toString().includes('$') && !priceDisplay.toString().includes('USD')) {
+                            priceDisplay = '$ ' + priceDisplay; 
+                        }
+                    }
+                    if(!priceDisplay) priceDisplay = "Inquire";
+
+                    document.getElementById('prop-price').textContent = priceDisplay;
+                    
+                    document.getElementById('prop-location').innerHTML = `<i class="fas fa-map-marker-alt"></i> ${data.ubicacion}`;
+                    document.getElementById('prop-type-tag').textContent = `${data.tipo} for ${data.operacion}`;
+                    
+                    if (data.expensas) {
+                        let exp = data.expensas;
+                        // ensure exp has $ if mostly numeric
+                        if(!exp.toString().includes('$')) exp = '$' + exp;
+                        document.getElementById('prop-expensas').textContent = `+ HOA Fees ${exp}`;
+                    }
+
+                    // IMAGES LOGIC
+                    window.allImages = [];
+                    if(data.imagenes.principal) window.allImages.push(data.imagenes.principal);
+                    if(data.imagenes.galeria && Array.isArray(data.imagenes.galeria)) {
+                        window.allImages = window.allImages.concat(data.imagenes.galeria);
+                    }
+
+                    // Clean duplicates just in case
+                    window.allImages = [...new Set(window.allImages)];
+
+                    // Render Main Image
+                    const mainImg = document.getElementById('img-main');
+                    if(window.allImages.length > 0) {
+                        mainImg.src = window.allImages[0];
+                    }
+
+                    // Render Thumbs (max 2)
+                    const galleryContainer = document.getElementById('gallery-thumbs');
+                    galleryContainer.innerHTML = ''; // Clear container for safety
+                    
+                    const thumbsToShow = window.allImages.slice(1, 3); // index 1 and 2
+
+                    thumbsToShow.forEach((url, i) => {
+                         // The actual index in allImages is i + 1
+                         const realIndex = i + 1;
+                         const div = document.createElement('div');
+                         div.className = 'gallery-thumb-container';
+                         div.onclick = () => window.openLightbox(realIndex);
+                         
+                         const img = document.createElement('img');
+                         img.src = url;
+                         img.className = 'gallery-thumb';
+                         div.appendChild(img);
+
+                         // Check if last thumb and there are more images
+                         if (i === thumbsToShow.length - 1) {
+                             const remaining = window.allImages.length - 3; // 1 main + 2 thumbs showed = 3
+                             if (remaining > 0) {
+                                 const overlay = document.createElement('div');
+                                 overlay.className = 'more-photos-overlay';
+                                 overlay.textContent = `+${remaining}`;
+                                 div.appendChild(overlay);
+                             }
+                         }
+                         galleryContainer.appendChild(div);
+                    });
+
+
+                    // Description
+                    document.getElementById('prop-description').textContent = data.descripcion;
+
+                    // Video
+                    if(data.video) {
+                        const vWrapper = document.getElementById('video-wrapper');
+                        const vPlayer = document.getElementById('prop-video');
+                        vWrapper.style.display = 'block';
+                        vPlayer.src = data.video;
+                    }
+
+                    // Code & Status Logic
+                    if(data.codigo) document.getElementById('prop-code').textContent = data.codigo;
+                    else document.getElementById('prop-code').textContent = "REF-" + id.substring(0, 6).toUpperCase();
+
+                    if(data.estado && data.estado !== 'disponible') {
+                        const sb = document.getElementById('prop-status-badge');
+                        sb.style.display = 'block';
+                        let color = '#28a745';
+                        if(data.estado === 'reservado') color = '#e67e22'; // Orange
+                        if(data.estado === 'vendido') color = '#dc3545'; // Red
+                        
+                        sb.innerHTML = `<span style="background:${color}; color:white; padding: 5px 15px; border-radius: 4px; font-weight:bold; letter-spacing: 1px; text-transform: uppercase;">${data.estado}</span>`;
+                    }
+
+                    // BASIC INFORMATION
+                    const infoGrid = document.getElementById('info-basica-grid');
+                    let basicHtml = '';
+                    if(data.ambientes) basicHtml += `<div class="spec-item"><i class="fas fa-door-open"></i> <strong>Rooms:</strong> ${data.ambientes}</div>`;
+                    if(data.dormitorios) basicHtml += `<div class="spec-item"><i class="fas fa-bed"></i> <strong>Bedrooms:</strong> ${data.dormitorios}</div>`;
+                    if(data.banios) basicHtml += `<div class="spec-item"><i class="fas fa-bath"></i> <strong>Bathrooms:</strong> ${data.banios}</div>`;
+                    if(data.cocheras) basicHtml += `<div class="spec-item"><i class="fas fa-car"></i> <strong>Parking:</strong> ${data.cocheras}</div>`;
+                    
+                    // Additional requested fields
+                    if(data.condicion) basicHtml += `<div class="spec-item"><i class="fas fa-check-circle"></i> <strong>Condition:</strong> ${data.condicion}</div>`; 
+                    
+                    if(data.plantas) basicHtml += `<div class="spec-item"><i class="fas fa-layer-group"></i> <strong>Floors:</strong> ${data.plantas}</div>`; 
+                    else basicHtml += `<div class="spec-item"><i class="fas fa-layer-group"></i> <strong>Floors:</strong> 1</div>`;
+
+                    if(data.antiguedad) basicHtml += `<div class="spec-item"><i class="fas fa-calendar-alt"></i> <strong>Age:</strong> ${data.antiguedad} Years</div>`;
+                    
+                    if(data.situacion) basicHtml += `<div class="spec-item"><i class="fas fa-user-check"></i> <strong>Status:</strong> ${data.situacion}</div>`; 
+                    
+                    if(data.orientacion) basicHtml += `<div class="spec-item"><i class="fas fa-compass"></i> <strong>Orientation:</strong> ${data.orientacion}</div>`; 
+                    
+                    if(data.caracteristicas && data.caracteristicas.credito) {
+                        basicHtml += `<div class="spec-item"><i class="fas fa-hand-holding-usd"></i> <strong>Loan:</strong> Eligible</div>`; 
+                    } else {
+                        basicHtml += `<div class="spec-item"><i class="fas fa-hand-holding-usd"></i> <strong>Loan:</strong> Not eligible / Inquire</div>`; 
+                    } 
+                    
+                    // Also add Type and Operation here
+                    basicHtml += `<div class="spec-item"><i class="fas fa-home"></i> <strong>Type:</strong> ${capitalize(data.tipo)}</div>`;
+
+                    infoGrid.innerHTML = basicHtml;
+
+                    // AREAS
+                    const surfGrid = document.getElementById('superficies-grid');
+                    let surfHtml = '';
+                    if(data.superficie.total) surfHtml += `<div class="spec-item"><i class="fas fa-ruler-combined"></i> <strong>Land:</strong> ${data.superficie.total} m²</div>`;
+                    if(data.superficie.cubierta) surfHtml += `<div class="spec-item"><i class="fas fa-ruler-horizontal"></i> <strong>Covered:</strong> ${data.superficie.cubierta} m²</div>`;
+                    // Front and Depth
+                    if(data.superficie.frente) surfHtml += `<div class="spec-item"><i class="fas fa-arrows-alt-h"></i> <strong>Front:</strong> ${data.superficie.frente} m</div>`;
+                    if(data.superficie.fondo) surfHtml += `<div class="spec-item"><i class="fas fa-arrows-alt-v"></i> <strong>Depth:</strong> ${data.superficie.fondo} m</div>`;
+                    
+                    // Total Built
+                    if(data.superficie.cubierta && !data.superficie.total) surfHtml += `<div class="spec-item"><i class="fas fa-building"></i> <strong>Total Built:</strong> ${data.superficie.cubierta} m²</div>`; 
+                    
+                    surfGrid.innerHTML = surfHtml;
+
+                    // Amenities
+                    const amenitiesContainer = document.getElementById('amenities-container');
+                    const charMap = {
+                        agua: 'Running Water', luz: 'Electricity', gas: 'Natural Gas', gas_envasado: 'Bottled Gas', cloacas: 'Sewage',
+                        internet: 'Internet', pavimento: 'Paved Road', pileta: 'Swimming Pool', parrilla: 'BBQ Grill',
+                        jardin: 'Garden', seguridad: 'Security', mascotas: 'Pet Friendly', profesional: 'Suitable for Professionals',
+                        escritura: 'Title Deed', planos: 'Floor Plans',
+                        plazas: 'Nearby Parks', culturales: 'Cultural Spaces', universidad: 'University',
+                        secundaria: 'High School', primaria: 'Elementary School'
+                    };
+                    
+                    if (data.caracteristicas) {
+                        for (const [key, val] of Object.entries(data.caracteristicas)) {
+                            if (val) {
+                                const span = document.createElement('span');
+                                span.className = 'tag-amenity';
+                                span.innerHTML = `<i class="fas fa-check"></i> ${charMap[key] || key}`;
+                                amenitiesContainer.appendChild(span);
+                            }
+                        }
+                    }
+
+        // Initialize Map
+        if (data.lat && data.lng) {
+            const lat = parseFloat(data.lat);
+            const lng = parseFloat(data.lng);
+            var map = L.map('detail-map').setView([lat, lng], 15);
+            L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+                maxZoom: 20,
+                subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+                attribution: '&copy; Google Maps'
+            }).addTo(map);
+            L.marker([lat, lng]).addTo(map).bindPopup(data.titulo);
+            
+        }
+
+        // LOAD SIMILAR
+        loadSimilarProperties(data, id);
+
+                } else {
+                    document.getElementById('detail-content').innerHTML = '<h2 style="text-align:center;">The property does not exist or has been removed.</h2>';
+                }
+
+             } catch (e) {
+                 console.error(e);
+                 document.getElementById('detail-content').innerHTML = '<h2 style="text-align:center;">Error loading the property.</h2>';
+             }
+        });
+
+        async function loadSimilarProperties(currentProp, currentId) {
+            const container = document.getElementById('similar-container');
+            const section = document.getElementById('similar-properties-section');
+            if (!container) return;
+
+            try {
+                // 1. Determine price range
+                const price = parseFloat(currentProp.precio);
+                if (isNaN(price)) return; // No similarity by price if no price
+
+                let minP, maxP;
+                if(currentProp.operacion.toLowerCase() === 'venta') {
+                    minP = price - 50000;
+                    maxP = price + 50000;
+                    if(minP < 0) minP = 0;
+                } else if(currentProp.operacion.toLowerCase() === 'alquiler') {
+                     minP = price - 150000;
+                     maxP = price + 150000;
+                     if(minP < 0) minP = 0;
+                } else {
+                    // Default range for others
+                    minP = price * 0.8;
+                    maxP = price * 1.2;
+                }
+
+                const collRef = collection(db, "propiedades");
+                // We fetch matches by operation and filter locally to avoid index issues
+                const q = query(
+                    collRef, 
+                    where("operacion", "==", currentProp.operacion),
+                    limit(50) // Reasonable limit to filter from
+                );
+                
+                const snap = await getDocs(q);
+                let candidates = [];
+
+                snap.forEach(d => {
+                    if(d.id === currentId) return;
+                    const p = d.data();
+                    
+                    // Filter by currency
+                    if(p.moneda !== currentProp.moneda) return;
+                    
+                    // Filter by price
+                    const pPrice = parseFloat(p.precio);
+                    if(isNaN(pPrice)) return;
+
+                    if(pPrice >= minP && pPrice <= maxP) {
+                        candidates.push({ id: d.id, ...p });
+                    }
+                });
+
+                // Top 3
+                candidates = candidates.slice(0, 3);
+
+                if(candidates.length > 0) {
+                    section.style.display = 'block';
+                    
+                    candidates.forEach(prop => {
+                        const card = document.createElement('article');
+                        // Reuse basic card styling
+                        card.className = 'property-card';
+                        card.style.background = '#fff';
+                        card.style.borderRadius = '8px';
+                        card.style.overflow = 'hidden';
+                        card.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
+                        card.style.cursor = 'pointer';
+                        card.onclick = () => window.open(`property-detail.html?id=${prop.id}`, '_blank');
+                        
+                        let tagClass = 'sale'; // Default color
+                        let tagColor = '#27ae60';
+                        if (prop.operacion === 'alquiler') tagColor = '#e67e22';
+
+                        const priceDisplay = prop.moneda ? `${prop.moneda} ${prop.precio}` : prop.precio;
+                        const titulo = prop.titulo || 'No Title';
+                        const loc = prop.ubicacion || '';
+                        const img = prop.imagenes?.principal || 'https://via.placeholder.com/800x600?text=No+Image';
+
+                        // Rooms/ etc
+                        let feats = '';
+                        if(prop.ambientes) feats += `<span><i class="fas fa-home"></i> ${prop.ambientes} Rooms</span>`;
+                        if(prop.superficie?.total) feats += `<span style="margin-left:10px;"><i class="fas fa-ruler"></i> ${prop.superficie.total}m²</span>`;
+
+                        card.innerHTML = `
+                            <div style="position:relative; height: 200px;">
+                                <img src="${img}" style="width:100%; height:100%; object-fit:cover;">
+                                <span style="position:absolute; top:10px; left:10px; background:${tagColor}; color:white; padding:4px 8px; border-radius:4px; font-size:0.8rem; text-transform:uppercase;">
+                                    ${capitalize(prop.tipo)} for ${capitalize(prop.operacion)}
+                                </span>
+                            </div>
+                            <div style="padding: 15px;">
+                                <h3 style="font-size: 1.1rem; margin: 0 0 10px 0; color:#333;">${titulo}</h3>
+                                <p style="color: #666; font-size: 0.9rem; margin-bottom: 10px;"><i class="fas fa-map-marker-alt"></i> ${loc}</p>
+                                <div style="font-weight:bold; color:var(--secondary-color); font-size:1.2rem; margin-bottom:10px;">${priceDisplay}</div>
+                                <div style="display:flex; flex-wrap:wrap; font-size:0.8rem; color:#555;">
+                                    ${feats}
+                                </div>
+                            </div>
+                        `;
+                        container.appendChild(card);
+                    });
+                }
+            } catch(e) {
+                console.error("Error similar props", e);
+            }
+        }
+
+        function capitalize(str) {
+            if(!str) return '';
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+    </script>
+</body>
+</html>
